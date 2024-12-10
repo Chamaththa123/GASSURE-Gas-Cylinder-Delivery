@@ -221,8 +221,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['logout'])) {
                 <?php echo htmlspecialchars($_SESSION['user_name']); ?>
             </a>
 
-            <a style="padding:0px" href='user-profile.php'><img src="./images/user.png" class='logo' style='width:40px'
-                    alt="Logo"></a>
+            <a style="padding:0px" href='./client/user-profile.php'><img src="./images/user.png" class='logo'
+                    style='width:40px' alt="Logo"></a>
 
             <?php else: ?>
             <button class="btn" onclick="document.getElementById('login').style.display='block'">SIGN
