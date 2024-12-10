@@ -209,6 +209,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['logout'])) {
             <a href="./../index.php">Home</a>
             <a href="./client/abc.php">How It Works</a>
             <a href="trainer.php">Order Now</a>
+            <a href="./client/feedback.php">Feedback</a>
             <a href="about.php">About Us</a>
             <a href="blog.php">Contact Us</a>
             <?php if (isset($_SESSION['role']) && $_SESSION['role'] == 1): ?>
