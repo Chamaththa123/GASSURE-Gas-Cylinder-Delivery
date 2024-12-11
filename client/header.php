@@ -208,7 +208,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['logout'])) {
         <div class="split">
             <a href="./../index.php">Home</a>
             <a href="./client/abc.php">How It Works</a>
-            <a href="trainer.php">Order Now</a>
+            <a href="./order.php">Order Now</a>
             <a href="./feedback.php">Feedback</a>
             <a href="about.php">About Us</a>
             <a href="blog.php">Contact Us</a>
