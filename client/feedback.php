@@ -55,6 +55,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Feedback</title>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="public/assets/css/profile.css">
@@ -66,7 +67,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         width: 100%;
         height: 100%;
         display: none;
-        justify-content: center;
+        /* justify-content: center; */
         align-items: flex-start;
         padding-top: 10px;
         background-color: rgba(0, 0, 0, 0.4);
@@ -211,24 +212,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         display: flex;
         justify-content: center;
         gap: 5px;
+        direction: rtl;
+        /* Ensures left-to-right layout */
     }
 
     .stars input {
         display: none;
+        /* Hide the radio inputs */
     }
 
     .stars label {
         font-size: 30px;
         color: #ccc;
+        /* Default star color */
         cursor: pointer;
         transition: color 0.2s ease;
     }
 
-    .stars input:checked~label,
+    /* Highlight stars left-to-right when a star is selected */
+    .stars input:checked~label {
+        color: #ffd800;
+        /* Highlighted color */
+    }
+
+    /* Highlight stars left-to-right on hover */
     .stars label:hover,
     .stars label:hover~label {
         color: #ffd800;
+        /* Highlighted color */
     }
+
 
     /* Stack sections vertically on smaller screens */
     @media (max-width: 768px) {
@@ -253,18 +266,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <img src="../images/user.png" style="width: 60%; display: block; margin: 0 auto;" alt="User Image">
 
                     <?php if ($user): ?>
-                    <h2 style='text-align:center'>
-                        <?php echo htmlspecialchars($user['first_name'] . " " . $user['last_name']); ?>
-                    </h2>
-                    <p><strong>Email:</strong> <?php echo htmlspecialchars($user['email']); ?></p>
-                    <p><strong>Address:</strong> <?php echo htmlspecialchars($user['address']); ?></p>
-                    <?php else: ?>
-                    <p>No user details available.</p>
-                    <?php endif; ?>
                     <div>
-                        <button onclick="document.getElementById('addFeedback').style.display='block'" name="logout"
-                            class="delete-button">Add Your Feedback</button>
+                        <button onclick="document.getElementById('addFeedback').style.display='block'"
+                            name="addFeedback" class="delete-button">Add Your Feedback</button>
                     </div>
+                    <?php else: ?>
+                    <p>No user details available. Please log in to provide feedback.</p>
+                    <?php endif; ?>
+
+
                 </div>
                 <div class="left-section">
                     <h2 style='text-align:left'>
@@ -287,29 +297,65 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                     <label for="feedback_text">Your
                         Feedback:</label><br />
-                    <textarea name="feedback_text" id="feedback_text" rows="4" required
+                    <textarea name="feedback_text" id="feedback_text" rows="4"
                         style='border-radius:5px;width:100%'></textarea>
 
-                    <div class="input-group">
+                    <div class="input-group" style='margin-top:10px'>
                         <label for="rating">Rating:</label>
                         <div class="stars">
-                            <input type="radio" id="star1" name="rating" value="1"><label for="star1"
+                            <input type="radio" id="star1" name="rating" value="5"><label for="star1"
                                 class="fa fa-star"></label>
-                            <input type="radio" id="star2" name="rating" value="2"><label for="star2"
+                            <input type="radio" id="star2" name="rating" value="4"><label for="star2"
                                 class="fa fa-star"></label>
                             <input type="radio" id="star3" name="rating" value="3"><label for="star3"
                                 class="fa fa-star"></label>
-                            <input type="radio" id="star4" name="rating" value="4"><label for="star4"
+                            <input type="radio" id="star4" name="rating" value="2"><label for="star4"
                                 class="fa fa-star"></label>
-                            <input type="radio" id="star5" name="rating" value="5"><label for="star5"
+                            <input type="radio" id="star5" name="rating" value="1"><label for="star5"
                                 class="fa fa-star"></label>
                         </div>
                     </div>
-                    <button type="submit" class="btn">Submit</button>
+                    <button type="submit" class="btn" style='float:right'>Submit</button>
                 </form>
             </div>
         </div>
     </div>
+
+    <script>
+    <?php if (isset($_SESSION['message'])): ?>
+    Swal.fire({
+        icon: 'success',
+        title: 'Success',
+        text: '<?php echo $_SESSION['message']; ?>',
+    });
+    <?php unset($_SESSION['message']); ?>
+    <?php elseif (isset($_SESSION['error'])): ?>
+    Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: '<?php echo $_SESSION['error']; ?>',
+    });
+    <?php unset($_SESSION['error']); ?>
+    <?php endif; ?>
+    // Validation for the Feedback Form
+    document.querySelector('form[action=""]').addEventListener('submit', function(e) {
+        const form = e.target;
+        const feedbackText = form.querySelector('textarea[name="feedback_text"]').value.trim();
+        const rating = form.querySelector('input[name="rating"]:checked'); // Check if any rating is selected
+
+        // Check if feedback text or rating is empty
+        if (!feedbackText || !rating) {
+            e.preventDefault(); // Prevent form submission
+            Swal.fire({
+                icon: 'error',
+                title: 'Validation Error',
+                text: 'Both feedback and rating are required!',
+            });
+            return false;
+        }
+    });
+    </script>
+
 </body>
 
 </html>
