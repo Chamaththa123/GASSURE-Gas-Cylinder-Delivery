@@ -1,21 +1,17 @@
 <?php
-// Only start a session if one doesn't already exist
 if (session_status() === PHP_SESSION_NONE) {
-    session_start();  // Start the session to access session variables
+    session_start(); 
 }
 
-// Check if the database connection is not already established to avoid re-requiring in other files
 if (!isset($conn)) {
     require './config/config.php';  // Database connection
 }
 
-// Handle user login
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (isset($_POST['login'])) {
         $email = $_POST['email'];
         $password = $_POST['password'];
 
-        // Fetch user from the database
         $stmt = $conn->prepare("SELECT * FROM users WHERE email = ?");
         $stmt->bind_param("s", $email);
         $stmt->execute();
@@ -23,16 +19,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         if ($result->num_rows == 1) {
             $user = $result->fetch_assoc();
-
-            // Verify password
             if (password_verify($password, $user['password'])) {
-                // Set session variables
                 $_SESSION['user_email'] = $user['email'];
                 $_SESSION['user_name'] = $user['first_name'];
                 $_SESSION['id'] = $user['id'];
                 $_SESSION['role'] = $user['role'];
-
-                // Redirect to the same page to refresh and hide login/signup buttons
+                $success_message = "Login successful!";
                 header('Location: ' . $_SERVER['PHP_SELF']);
                 exit();
             } else {
@@ -41,18 +33,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         } else {
             $error_message = "No user found with this email!";
         }
+        
     }
 
-    // Handle user registration
-// Handle user registration
 if (isset($_POST['register'])) {
     $first_name = $_POST['first_name'];
     $last_name = $_POST['last_name'];
     $email = $_POST['email'];
     $address = $_POST['address'];
-    $password = password_hash($_POST['password'], PASSWORD_BCRYPT);  // Hash the password
+    $password = password_hash($_POST['password'], PASSWORD_BCRYPT);
 
-    // Check if the user already exists
     $checkEmail = $conn->prepare("SELECT * FROM users WHERE email = ?");
     $checkEmail->bind_param("s", $email);
     $checkEmail->execute();
@@ -61,21 +51,17 @@ if (isset($_POST['register'])) {
     if ($result->num_rows > 0) {
         $error_message = "User already exists!";
     } else {
-        // Insert new user
         $stmt = $conn->prepare("INSERT INTO users (first_name, last_name, email, address, password) VALUES (?, ?, ?, ?, ?)");
         $stmt->bind_param("sssss", $first_name, $last_name, $email, $address, $password);
 
         if ($stmt->execute()) {
-            // Retrieve the newly created user ID
             $user_id = $stmt->insert_id;
 
-            // Set session variables
             $_SESSION['user_email'] = $email;
             $_SESSION['user_name'] = $first_name;
             $_SESSION['id'] = $user_id;
-            $_SESSION['role'] = 0;  // Set default role or fetch from the database if needed
+            $_SESSION['role'] = 0; 
 
-            // Redirect to the same page after successful registration
             header('Location: ' . $_SERVER['PHP_SELF']);
             exit();
         } else {
@@ -98,9 +84,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['logout'])) {
 <!DOCTYPE html>
 <html>
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-<link rel="stylesheet" href="public/assets/css/header.css">
+<link rel="stylesheet" href="css/header.css">
 <style>
 .custom-container {
     background-color: white;
@@ -141,7 +129,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['logout'])) {
 
 .border-radius {
     border-radius: 10px;
-    max-width: 800px;
+    max-width: 500px;
     margin: auto;
 }
 
@@ -172,18 +160,24 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['logout'])) {
 }
 
 .btn {
-    padding: 3px;
+    padding: 5px;
     width: 80px;
-    background-color: #0074D9;
-    font-size: 12px;
+    background-color: #ffd800;
+    font-size: 14px;
     color: white;
     border: none;
     cursor: pointer;
     border-radius: 10px;
     margin-top: 10px;
-    border-color: #0074D9;
-    border: 1px solid #0074D9;
-    font-family: 'Poppins', Arial, Helvetica, sans-serif;
+    border-color: #ffd800;
+    border: 1px solid #ffd800;
+    font-family: "Outfit", sans-serif;
+}
+
+.btn:hover {
+    background-color: #ffd800;
+    border-color: #ffd800;
+    border: 1px solid #ffd800;
 }
 
 .alert {
@@ -210,16 +204,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['logout'])) {
 
 <body>
     <div class="topnav">
-        <img src="public/assets/images/logo.jpg" class='logo' style='width:80px' alt="Logo">
+        <img src="images/logo.png" class='logo' style='width:90px' alt="Logo">
         <div class="split">
             <a href="./../index.php">Home</a>
-            <a href="./client/abc.php">Membership</a>
-            <a href="trainer.php">Our Trainers</a>
-            <a href="class.php">Classes</a>
-            <a href="appointment.php">Appointments</a>
-            <a href="contactus.php">Contact Us</a>
+            <a href="./client/abc.php">How It Works</a>
+            <a href="trainer.php">Order Now</a>
+            <a href="./client/feedback.php">Feedback</a>
             <a href="about.php">About Us</a>
-            <a href="blog.php">Blog</a>
+            <a href="blog.php">Contact Us</a>
             <?php if (isset($_SESSION['role']) && $_SESSION['role'] == 1): ?>
             <a href="src/admin/membership-admin.php">Admin</a>
             <?php endif; ?>
@@ -230,7 +222,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['logout'])) {
                 <?php echo htmlspecialchars($_SESSION['user_name']); ?>
             </a>
 
-            <a style="padding:0px" href='user-profile.php'><img src="public/assets/images/user.png" class='logo'
+            <a style="padding:0px" href='./client/user-profile.php'><img src="./images/user.png" class='logo'
                     style='width:40px' alt="Logo"></a>
 
             <?php else: ?>
@@ -243,17 +235,28 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['logout'])) {
 
     <!-- Display error message, if any -->
     <?php if (isset($error_message)): ?>
-    <div class="alert" style="background-color: #f44336;">
-        <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
-        <div class="error-message"><?php echo htmlspecialchars($error_message); ?></div>
-    </div>
-
+    <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: "<?php echo addslashes($error_message); ?>",
+        });
+    });
+    </script>
     <?php endif; ?>
 
-
-
-
-
+    <?php if (isset($success_message)): ?>
+    <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        Swal.fire({
+            icon: 'success',
+            title: 'Success!',
+            text: "<?php echo addslashes($success_message); ?>",
+        });
+    });
+    </script>
+    <?php endif; ?>
 
     <div id="login" class="w3-modal">
         <div class="w3-modal-content w3-animate-top border-radius">
@@ -264,11 +267,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['logout'])) {
                 <h3>Sign In</h3>
                 <form method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>"
                     style='margin-top:20px;margin-bottom:20px;'>
-                    <label for="email"><b>Email</b></label>
-                    <input type="text" placeholder="Enter Email" name="email" required>
+                    <label for="email"><b>Email *</b></label>
+                    <input type="text" placeholder="Enter Email" name="email">
 
-                    <label for="password"><b>Password</b></label>
-                    <input type="password" placeholder="Enter Password" name="password" required>
+                    <label for="password"><b>Password *</b></label>
+                    <input type="password" placeholder="Enter Password" name="password">
                     <label>
                         <input type="checkbox" checked="checked" name="remember"> Remember me
                     </label>
@@ -280,27 +283,27 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['logout'])) {
 
     <div id="register" class="w3-modal">
         <div class="w3-modal-content w3-animate-top border-radius">
-            <div class="w3-container">
+            <div class="w3-container ">
                 <span onclick="document.getElementById('register').style.display='none'"
                     class="w3-button w3-display-topright"
                     style="border-radius: 20px;margin-top:10px;margin-right:10px">&times;</span>
                 <h3>Sign Up</h3>
                 <form method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>"
                     style='margin-top:20px;margin-bottom:20px;'>
-                    <label for="fname"><b>First Name</b></label>
-                    <input type="text" placeholder="Enter First Name" name="first_name" required>
+                    <label for="fname"><b>First Name *</b></label>
+                    <input type="text" placeholder="Enter First Name" name="first_name">
 
-                    <label for="lname"><b>Last Name</b></label>
-                    <input type="text" placeholder="Enter Last Name" name="last_name" required>
+                    <label for="lname"><b>Last Name *</b></label>
+                    <input type="text" placeholder="Enter Last Name" name="last_name">
 
-                    <label for="lname"><b>Email</b></label>
-                    <input type="text" placeholder="Enter Email" name="email" required>
+                    <label for="lname"><b>Email *</b></label>
+                    <input type="text" placeholder="Enter Email" name="email">
 
-                    <label for="address"><b>Address</b></label>
-                    <input type="text" placeholder="Enter Address" name="address" required>
+                    <label for="address"><b>Address *</b></label>
+                    <input type="text" placeholder="Enter Address" name="address">
 
-                    <label for="password"><b>Password</b></label>
-                    <input type="password" placeholder="Enter Password" name="password" required>
+                    <label for="password"><b>Password *</b></label>
+                    <input type="password" placeholder="Enter Password" name="password">
 
                     <button type="submit" name="register">Register</button>
                 </form>
@@ -309,18 +312,47 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['logout'])) {
     </div>
 
     <script>
-    var loginModal = document.getElementById('login');
-    var registerModal = document.getElementById('register');
+    // Validation for Sign In Form
+    document.querySelector('form[action="<?php echo $_SERVER["PHP_SELF"]; ?>"][method="post"]').addEventListener(
+        'submit',
+        function(e) {
+            const form = e.target;
+            const email = form.querySelector('input[name="email"]').value.trim();
+            const password = form.querySelector('input[name="password"]').value.trim();
 
-    window.onclick = function(event) {
-        if (event.target == loginModal) {
-            loginModal.style.display = "none";
-        }
-        if (event.target == registerModal) {
-            registerModal.style.display = "none";
-        }
-    }
+            if (email === "" || password === "") {
+                e.preventDefault();
+                Swal.fire({
+                    icon: 'error',
+                    text: 'Please fill in all required fields!',
+                });
+                return false;
+            }
+        });
+
+    // Validation for Sign Up Form
+    document.querySelectorAll('form[action="<?php echo $_SERVER["PHP_SELF"]; ?>"][method="post"]').forEach(function(
+        form) {
+        form.addEventListener('submit', function(e) {
+            const firstName = form.querySelector('input[name="first_name"]').value.trim();
+            const lastName = form.querySelector('input[name="last_name"]').value.trim();
+            const email = form.querySelector('input[name="email"]').value.trim();
+            const address = form.querySelector('input[name="address"]').value.trim();
+            const password = form.querySelector('input[name="password"]').value.trim();
+
+            if (firstName === "" || lastName === "" || email === "" || address === "" || password ===
+                "") {
+                e.preventDefault();
+                Swal.fire({
+                    icon: 'error',
+                    text: 'Please fill in all required fields!',
+                });
+                return false;
+            }
+        });
+    });
     </script>
+
 </body>
 
 </html>

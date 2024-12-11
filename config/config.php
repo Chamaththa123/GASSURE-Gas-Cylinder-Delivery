@@ -3,7 +3,7 @@
 define('DB_HOST', 'localhost');     
 define('DB_USER', 'root');
 define('DB_PASS', '');  
-define('DB_NAME', 'fitzone'); 
+define('DB_NAME', 'gassure-gas'); 
 
 $conn = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
 
