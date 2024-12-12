@@ -13,7 +13,6 @@ if (!isset($conn)) {
 $item_query = $conn->prepare("SELECT id, description, img_url, stock, price, low_stock_level FROM item");
 $item_query->execute();
 $items_result = $item_query->get_result();
-
 ?>
 
 <!DOCTYPE html>
@@ -32,6 +31,23 @@ $items_result = $item_query->get_result();
 
     .form-page.active {
         display: block;
+    }
+
+    .quantity-controls {
+        display: inline-flex;
+        align-items: center;
+    }
+
+    .quantity-controls button {
+        width: 25px;
+        height: 25px;
+        text-align: center;
+    }
+
+    .quantity-controls input {
+        width: 40px;
+        text-align: center;
+        margin: 0 5px;
     }
     </style>
 </head>
@@ -53,6 +69,11 @@ $items_result = $item_query->get_result();
                         <strong><?= $item['description'] ?></strong>
                         <span>Price: <?= $item['price'] ?></span>
                     </label>
+                    <div class="quantity-controls">
+                        <button type="button" class="decrement" data-target="quantity_<?= $item['id'] ?>">-</button>
+                        <input type="number" name="quantity_<?= $item['id'] ?>" id="quantity_<?= $item['id'] ?>" value="1" min="1" max="<?= $item['stock'] ?>">
+                        <button type="button" class="increment" data-target="quantity_<?= $item['id'] ?>">+</button>
+                    </div>
                 </div>
                 <?php } ?>
             </div>
@@ -61,6 +82,7 @@ $items_result = $item_query->get_result();
             <div class="form-page" id="page2">
                 <h3>Order Details</h3>
                 <input type="hidden" name="price" id="selected_price">
+                <input type="hidden" name="selected_quantity" id="selected_quantity">
                 <label for="delivery_name">Delivery Name:</label>
                 <input type="text" id="delivery_name" name="delivery_name" required><br>
 
@@ -85,6 +107,7 @@ $items_result = $item_query->get_result();
     const prevButton = document.getElementById('prevButton');
     const submitButton = document.getElementById('submitButton');
     const selectedPriceInput = document.getElementById('selected_price');
+    const selectedQuantityInput = document.getElementById('selected_quantity');
     let currentPage = 0;
 
     function updatePage() {
@@ -103,7 +126,9 @@ $items_result = $item_query->get_result();
                 alert('Please select an item!');
                 return;
             }
+            const quantityField = document.getElementById(`quantity_${selectedItem.value}`);
             selectedPriceInput.value = selectedItem.dataset.price;
+            selectedQuantityInput.value = quantityField.value;
         }
         currentPage++;
         updatePage();
@@ -112,6 +137,23 @@ $items_result = $item_query->get_result();
     prevButton.addEventListener('click', () => {
         currentPage--;
         updatePage();
+    });
+
+    document.querySelectorAll('.decrement').forEach(button => {
+        button.addEventListener('click', (e) => {
+            const targetId = e.target.dataset.target;
+            const input = document.getElementById(targetId);
+            input.value = Math.max(1, parseInt(input.value) - 1);
+        });
+    });
+
+    document.querySelectorAll('.increment').forEach(button => {
+        button.addEventListener('click', (e) => {
+            const targetId = e.target.dataset.target;
+            const input = document.getElementById(targetId);
+            const max = parseInt(input.max);
+            input.value = Math.min(max, parseInt(input.value) + 1);
+        });
     });
 
     updatePage();
@@ -154,16 +196,19 @@ $items_result = $item_query->get_result();
         // Get form data
         $item_id = $_POST['item_id'];
         $price = $_POST['price'];
+        $quantity = $_POST['selected_quantity'];
         $delivery_name = $_POST['delivery_name'];
         $delivery_address = $_POST['delivery_address'];
         $contact = $_POST['contact'];
         $order_date = date('Y-m-d H:i:s');
         $status = 'Pending';
 
+        // Calculate total amount
+        $totalAmount = $price * $quantity;
+
         // Insert order into the database
-        $order_query = $conn->prepare("INSERT INTO orders (user_id, order_date, item_id, totalAmount, delivery_name, delivery_address, contact, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
-        $totalAmount = $price; // Assign the price to totalAmount
-        $order_query->bind_param("isidssss", $user_id, $order_date, $item_id, $totalAmount, $delivery_name, $delivery_address, $contact, $status);
+        $order_query = $conn->prepare("INSERT INTO orders (user_id, order_date, item_id, quantity, totalAmount, delivery_name, delivery_address, contact, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        $order_query->bind_param("isidsssss", $user_id, $order_date, $item_id, $quantity, $totalAmount, $delivery_name, $delivery_address, $contact, $status);
 
         if ($order_query->execute()) {
             echo "<script>Swal.fire('Success', 'Order placed successfully!', 'success');</script>";
