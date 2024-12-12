@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Multi-Page Form</title>
     <style>
-    body {
+    /* body {
         font-family: Arial, sans-serif;
         display: flex;
         justify-content: center;
@@ -81,13 +81,13 @@
 
     th {
         background-color: #f2f2f2;
-    }
+    } */
     </style>
 </head>
 
 <body>
-
-    <div class="form-container">
+<?php include './includes/header.php'; ?>
+    <!-- <div class="form-container">
         <form id="multiPageForm">
             <div class="form-page active" id="page1">
                 <label for="field1">Field 1:</label>
@@ -119,7 +119,7 @@
         </form>
 
         <div class="result" id="result" style="display: none;"></div>
-    </div>
+    </div> -->
 
     <script>
     const pages = document.querySelectorAll('.form-page');
