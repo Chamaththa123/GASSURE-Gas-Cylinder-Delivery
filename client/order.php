@@ -34,20 +34,34 @@ $items_result = $item_query->get_result();
     }
 
     .quantity-controls {
-        display: inline-flex;
+        display: flex;
+        justify-content: center;
         align-items: center;
+        margin: 10px 0;
     }
 
     .quantity-controls button {
-        width: 25px;
-        height: 25px;
+        width: 40px;
+        height: 40px;
         text-align: center;
+        font-size: 20px;
     }
 
     .quantity-controls input {
-        width: 40px;
+        width: 60px;
         text-align: center;
-        margin: 0 5px;
+        font-size: 18px;
+        margin: 0 10px;
+    }
+
+    .item-container {
+        margin: 10px 0;
+    }
+
+    .selected-item {
+        background-color: #f0f8ff;
+        padding: 10px;
+        border-radius: 5px;
     }
     </style>
 </head>
@@ -59,30 +73,32 @@ $items_result = $item_query->get_result();
             <!-- Page 1: Select Item -->
             <div class="form-page active" id="page1">
                 <h3>Select Item</h3>
-                <?php while ($item = $items_result->fetch_assoc()) { ?>
-                <div>
-                    <input type="radio" name="item_id" id="item_<?= $item['id'] ?>" value="<?= $item['id'] ?>"
-                        data-price="<?= $item['price'] ?>" required>
-                    <label for="item_<?= $item['id'] ?>">
-                        <img src="<?= $item['img_url'] ?>" alt="<?= $item['description'] ?>"
-                            style="width:50px; height:50px;">
-                        <strong><?= $item['description'] ?></strong>
-                        <span>Price: <?= $item['price'] ?></span>
-                    </label>
-                    <div class="quantity-controls">
-                        <button type="button" class="decrement" data-target="quantity_<?= $item['id'] ?>">-</button>
-                        <input type="number" name="quantity_<?= $item['id'] ?>" id="quantity_<?= $item['id'] ?>" value="1" min="1" max="<?= $item['stock'] ?>">
-                        <button type="button" class="increment" data-target="quantity_<?= $item['id'] ?>">+</button>
+                <div id="items-container">
+                    <?php while ($item = $items_result->fetch_assoc()) { ?>
+                    <div class="item-container" id="item_<?= $item['id'] ?>">
+                        <input type="radio" name="item_id" id="radio_<?= $item['id'] ?>" value="<?= $item['id'] ?>"
+                            data-price="<?= $item['price'] ?>" data-stock="<?= $item['stock'] ?>" required>
+                        <label for="radio_<?= $item['id'] ?>">
+                        <img src="<?= $item['img_url'] ?>" alt="<?= $item['description'] ?>" style="width:50px; height:50px;">
+
+                            <strong><?= $item['description'] ?></strong>
+                            <span>Price: <?= $item['price'] ?></span>
+                        </label>
                     </div>
+                    <?php } ?>
                 </div>
-                <?php } ?>
+
+                <div class="quantity-controls">
+                    <button type="button" id="decrement">-</button>
+                    <input type="number" id="quantity" name="selected_quantity" value="1" min="1" readonly>
+                    <button type="button" id="increment">+</button>
+                </div>
             </div>
 
             <!-- Page 2: Order Details -->
             <div class="form-page" id="page2">
                 <h3>Order Details</h3>
                 <input type="hidden" name="price" id="selected_price">
-                <input type="hidden" name="selected_quantity" id="selected_quantity">
                 <label for="delivery_name">Delivery Name:</label>
                 <input type="text" id="delivery_name" name="delivery_name" required><br>
 
@@ -106,8 +122,11 @@ $items_result = $item_query->get_result();
     const nextButton = document.getElementById('nextButton');
     const prevButton = document.getElementById('prevButton');
     const submitButton = document.getElementById('submitButton');
+    const quantityInput = document.getElementById('quantity');
+    const decrementButton = document.getElementById('decrement');
+    const incrementButton = document.getElementById('increment');
     const selectedPriceInput = document.getElementById('selected_price');
-    const selectedQuantityInput = document.getElementById('selected_quantity');
+
     let currentPage = 0;
 
     function updatePage() {
@@ -126,9 +145,12 @@ $items_result = $item_query->get_result();
                 alert('Please select an item!');
                 return;
             }
-            const quantityField = document.getElementById(`quantity_${selectedItem.value}`);
+            const maxQuantity = parseInt(selectedItem.dataset.stock);
+            if (parseInt(quantityInput.value) > maxQuantity) {
+                alert(`Maximum available stock is ${maxQuantity}.`);
+                return;
+            }
             selectedPriceInput.value = selectedItem.dataset.price;
-            selectedQuantityInput.value = quantityField.value;
         }
         currentPage++;
         updatePage();
@@ -139,21 +161,20 @@ $items_result = $item_query->get_result();
         updatePage();
     });
 
-    document.querySelectorAll('.decrement').forEach(button => {
-        button.addEventListener('click', (e) => {
-            const targetId = e.target.dataset.target;
-            const input = document.getElementById(targetId);
-            input.value = Math.max(1, parseInt(input.value) - 1);
-        });
+    decrementButton.addEventListener('click', () => {
+        const currentQuantity = parseInt(quantityInput.value);
+        quantityInput.value = Math.max(1, currentQuantity - 1);
     });
 
-    document.querySelectorAll('.increment').forEach(button => {
-        button.addEventListener('click', (e) => {
-            const targetId = e.target.dataset.target;
-            const input = document.getElementById(targetId);
-            const max = parseInt(input.max);
-            input.value = Math.min(max, parseInt(input.value) + 1);
-        });
+    incrementButton.addEventListener('click', () => {
+        const selectedItem = document.querySelector('input[name="item_id"]:checked');
+        if (selectedItem) {
+            const maxQuantity = parseInt(selectedItem.dataset.stock);
+            const currentQuantity = parseInt(quantityInput.value);
+            quantityInput.value = Math.min(maxQuantity, currentQuantity + 1);
+        } else {
+            alert('Please select an item first!');
+        }
     });
 
     updatePage();
@@ -207,16 +228,18 @@ $items_result = $item_query->get_result();
         $totalAmount = $price * $quantity;
 
         // Insert order into the database
-        $order_query = $conn->prepare("INSERT INTO orders (user_id, order_date, item_id, quantity, totalAmount, delivery_name, delivery_address, contact, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
-        $order_query->bind_param("isidsssss", $user_id, $order_date, $item_id, $quantity, $totalAmount, $delivery_name, $delivery_address, $contact, $status);
+        // Insert order into the database
+$order_query = $conn->prepare("INSERT INTO orders (user_id, order_date, item_id, quantity, totalAmount, delivery_name, delivery_address, contact, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+$order_query->bind_param("isiidssss", $user_id, $order_date, $item_id, $quantity, $totalAmount, $delivery_name, $delivery_address, $contact, $status);
 
-        if ($order_query->execute()) {
-            echo "<script>Swal.fire('Success', 'Order placed successfully!', 'success');</script>";
-            echo "<script>setTimeout(() => { window.location.href = 'user-profile.php'; }, 2000);</script>";
-            exit;
-        } else {
-            echo "<script>Swal.fire('Error', 'Failed to place the order.', 'error');</script>";
-        }
+if ($order_query->execute()) {
+    echo "<script>Swal.fire('Success', 'Order placed successfully!', 'success');</script>";
+    echo "<script>setTimeout(() => { window.location.href = 'user-profile.php'; }, 2000);</script>";
+    exit;
+} else {
+    echo "<script>Swal.fire('Error', 'Failed to place the order.', 'error');</script>";
+}
+
     }
     ?>
 
