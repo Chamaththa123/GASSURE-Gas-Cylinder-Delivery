@@ -27,6 +27,7 @@ $items_result = $item_query->get_result();
     <style>
         .form-page {
             display: none;
+            width: 100%;
         }
 
         .form-page.active {
@@ -37,7 +38,7 @@ $items_result = $item_query->get_result();
             display: flex;
             justify-content: center;
             align-items: center;
-            margin: 10px 0;
+            margin: 50px 0;
         }
 
         .quantity-controls button {
@@ -54,48 +55,71 @@ $items_result = $item_query->get_result();
             margin: 0 10px;
         }
 
-        .item-container {
-            margin: 10px 0;
-        }
+        #items-container {
+        display: flex;
+        flex-wrap: nowrap; /* Ensures items stay in the same row */
+        gap: 125px; /* Adds space between items */
+        overflow-x: auto; /* Allows horizontal scrolling if items exceed the container width */
+        cursor: pointer;
+    }
+        
+    .item-container {
+        text-align: center;
+        flex: 0 0 auto; /* Prevents items from shrinking or growing */
+        width: 50%;
+        cursor: pointer;
+    }
+
+    .form-footer{
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin: 50px 0;
+        gap:65%
+    }
     </style>
 </head>
 
-<body>
+<body >
     <?php include './header.php'; ?>
-    <div class="form-container">
-        <form id="multiPageForm" method="POST" action="">
+    <div style='margin: 40px;color: #546178'>
+    <div style='font-size: 15px; color: #cd0a0a; font-weight: medium;'>Home / Order Now</div>
+    <div style='margin-top:50px;text-align:center;font-size:35px ;font-weight:700;margin-bottom:20px;color: #546178'>
+    Place Your Order</div>
+    <div class="form-container" style="display: flex; justify-content: center; align-items: center; height:auto;">
+        <form id="multiPageForm" method="POST" action="" style='width:700px'>
             <!-- Page 1: Select Item -->
             <div class="form-page active" id="page1">
-                <h3>Select Item</h3>
+                <p style='font-weight:600;font-size:20px;margin-bottom:60px'>Select Cylinder Type</p>
                 <div id="items-container">
                     <?php while ($item = $items_result->fetch_assoc()) { ?>
-                        <div class="item-container" id="item_<?= $item['id'] ?>">
-                            <input type="radio" name="item_id" id="radio_<?= $item['id'] ?>" value="<?= $item['id'] ?>"
-                                data-price="<?= $item['price'] ?>" data-stock="<?= $item['stock'] ?>" required>
+                        <div id="item_<?= $item['id'] ?>" style='cursor: pointer;'>
+                           <div style="display: flex; justify-content: center; align-items: center;"> <input type="radio" name="item_id" id="radio_<?= $item['id'] ?>" value="<?= $item['id'] ?>"
+                           data-price="<?= $item['price'] ?>" data-stock="<?= $item['stock'] ?>" required></div>
                             <label for="radio_<?= $item['id'] ?>">
-                                <img src="<?= $item['img_url'] ?>" alt="<?= $item['description'] ?>" style="width:50px; height:50px;">
-                                <strong><?= $item['description'] ?></strong>
-                                <span>Price: <?= $item['price'] ?></span>
+                                <div><img src="<?= $item['img_url'] ?>" alt="<?= $item['description'] ?>" style="width:150px; height:170px;"></div>
+                                <div><strong><?= $item['description'] ?></strong></div>
+                                <div style='text-align:center'><span>Rs. <?= number_format($item['price'], 2) ?></span></div>
                             </label>
                         </div>
                     <?php } ?>
                 </div>
                 <div class="quantity-controls">
-                    <button type="button" id="decrement">-</button>
+                    <button type="button" id="decrement" style='background-color:#dc3545'>-</button>
                     <input type="number" id="quantity" name="selected_quantity" value="1" min="1" readonly>
-                    <button type="button" id="increment">+</button>
+                    <button type="button" id="increment" style='background-color:#0d6efd'>+</button>
                 </div>
             </div>
 
             <!-- Page 2: Order Details -->
             <div class="form-page" id="page2">
-                <h3>Order Details</h3>
+                <p style='font-weight:600;font-size:20px;margin-bottom:30px'>Add Your Delivery Details</p>
                 <input type="hidden" name="price" id="selected_price">
                 <label for="delivery_name">Delivery Name:</label>
                 <input type="text" id="delivery_name" name="delivery_name" required><br>
 
                 <label for="delivery_address">Delivery Address:</label>
-                <textarea id="delivery_address" name="delivery_address" required></textarea><br>
+                <input type="text" id="delivery_address" name="delivery_address" required><br>
 
                 <label for="contact">Contact:</label>
                 <input type="text" id="contact" name="contact" required>
@@ -103,7 +127,7 @@ $items_result = $item_query->get_result();
 
             <!-- Page 3: Payment Details -->
             <div class="form-page" id="page3">
-                <h3>Payment Details</h3>
+            <p style='font-weight:600;font-size:20px;margin-bottom:30px'>Add Payment Details</p>
                 <label for="card_type">Card Type:</label>
                 <select id="card_type" name="card_type" required>
                     <option value="Visa">Visa</option>
@@ -125,11 +149,12 @@ $items_result = $item_query->get_result();
             </div>
 
             <div class="form-footer">
-                <button type="button" id="prevButton" disabled>Previous</button>
-                <button type="button" id="nextButton">Next</button>
-                <button type="submit" id="submitButton" style="display: none;">Submit</button>
+                <button type="button" id="prevButton" disabled style='background-color:#dc3545'>< Previous</button>
+                <button type="button" id="nextButton" style='background-color:#0d6efd'>Next ></button>
+                <button type="submit" id="submitButton" style="display: none;">Place Order</button>
             </div>
         </form>
+    </div>
     </div>
 
     <script>
@@ -157,7 +182,11 @@ $items_result = $item_query->get_result();
             if (currentPage === 0) {
                 const selectedItem = document.querySelector('input[name="item_id"]:checked');
                 if (!selectedItem) {
-                    alert('Please select an item!');
+                    Swal.fire({
+            icon: 'warning', // Use 'warning' for this scenario
+            title: 'Warning',
+            text: 'Select an item!',
+        });
                     return;
                 }
                 const maxQuantity = parseInt(selectedItem.dataset.stock);
@@ -188,7 +217,11 @@ $items_result = $item_query->get_result();
                 const currentQuantity = parseInt(quantityInput.value);
                 quantityInput.value = Math.min(maxQuantity, currentQuantity + 1);
             } else {
-                alert('Please select an item first!');
+                Swal.fire({
+            icon: 'warning', // Use 'warning' for this scenario
+            title: 'Warning',
+            text: 'Please select an item first!',
+        });
             }
         });
 
