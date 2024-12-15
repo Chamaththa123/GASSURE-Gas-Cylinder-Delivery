@@ -123,16 +123,19 @@ $items_result = $item_query->get_result();
                     <div id="items-container">
                         <?php while ($item = $items_result->fetch_assoc()) { ?>
                         <div id="item_<?= $item['id'] ?>" style='cursor: pointer;'>
-                            <div style="display: flex; justify-content: center; align-items: center;"> <input
-                                    type="radio" name="item_id" id="radio_<?= $item['id'] ?>" value="<?= $item['id'] ?>"
-                                    data-price="<?= $item['price'] ?>" data-stock="<?= $item['stock'] ?>" required>
+                            <?php if ($item['stock'] > 0): // Only show radio button if in stock ?>
+                            <div style="display: flex; justify-content: center; align-items: center;">
+                                <input type="radio" name="item_id" id="radio_<?= $item['id'] ?>"
+                                    value="<?= $item['id'] ?>" data-price="<?= $item['price'] ?>"
+                                    data-stock="<?= $item['stock'] ?>" required>
                             </div>
+                            <?php endif; ?>
                             <label for="radio_<?= $item['id'] ?>">
                                 <div><img src="<?= $item['img_url'] ?>" alt="<?= $item['description'] ?>"
                                         style="width:150px; height:170px;"></div>
                                 <div><strong><?= $item['description'] ?></strong></div>
                                 <div style='text-align:center;font-size:13px'>
-                                    <?= $item['stock'] == 0 ? '<span style="color:red;">Out of Stock</span>' : '<span style="color:green;">In Stock</span>' ?>
+                                    <?= $item['stock'] <= 0 ? '<span style="color:red;">Out of Stock</span>' : '<span style="color:green;">In Stock</span>' ?>
                                 </div>
                                 <div style='text-align:center'><span>Rs. <?= number_format($item['price'], 2) ?></span>
                                 </div>
@@ -401,7 +404,7 @@ $items_result = $item_query->get_result();
         $stock_result = $stock_check_query->get_result();
         $item_data = $stock_result->fetch_assoc();
 
-        if ($item_data['stock'] <= 0) {
+        if ($item_data['stock'] < 0) {
             echo "<script>Swal.fire('Error', 'Item is out of stock!', 'error');</script>";
             $conn->rollback();
             exit;

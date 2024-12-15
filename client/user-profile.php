@@ -136,7 +136,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['logout'])) {
                 </div>
                 <div class="left-section">
                     <h2 style='text-align:left'>
-                        Order Details
+                    Recent Orders
                     </h2>
                 </div>
             </div>

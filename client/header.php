@@ -207,11 +207,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['logout'])) {
         <img src="../images/logo.png" class='logo' style='width:90px' alt="Logo">
         <div class="split">
             <a href="./../index.php">Home</a>
-            <a href="./client/abc.php">How It Works</a>
             <a href="./order.php">Order Now</a>
             <a href="./feedback.php">Feedback</a>
-            <a href="about.php">About Us</a>
-            <a href="blog.php">Contact Us</a>
             <?php if (isset($_SESSION['role']) && $_SESSION['role'] == 1): ?>
             <a href="src/admin/membership-admin.php">Admin</a>
             <?php endif; ?>
@@ -223,6 +220,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['logout'])) {
             </a>
 
             <a style="padding:0px" href='./user-profile.php'><img src="../images/user.png" class='logo'
+                    style='width:40px' alt="Logo"></a>
+            <a style="padding-left:10px" href='./order-history.php'><img src="../images/order-header.png" class='logo'
                     style='width:40px' alt="Logo"></a>
 
             <?php else: ?>
