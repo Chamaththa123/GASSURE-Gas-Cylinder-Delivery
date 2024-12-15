@@ -9,6 +9,9 @@ if (!isset($conn)) {
     require_once '../config/config.php';
 }
 
+$user = null; // Initialize to null to avoid undefined variable errors
+$user_id = null; 
+
 // Fetch logged-in user details
 $user = null; // Initialize to null to avoid undefined variable errors
 if (isset($_SESSION['user_email'])) {
@@ -20,6 +23,21 @@ if (isset($_SESSION['user_email'])) {
     $user_query->execute();
     $user_result = $user_query->get_result();
     $user = $user_result->fetch_assoc();
+
+    $user_id = $user ? $user['id'] : null;
+}
+
+$order_result = null;
+if ($user_id !== null) {
+    $order_query = $conn->prepare(
+        "SELECT o.*, i.*, o.id AS orderId 
+         FROM orders o 
+         JOIN item i ON o.item_id = i.id 
+         WHERE o.user_id = ? LIMIT 3" 
+    );
+    $order_query->bind_param("i", $user_id);
+    $order_query->execute();
+    $order_result = $order_query->get_result();
 }
 
 // Handle logout functionality
@@ -135,42 +153,58 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['logout'])) {
                     </form>
                 </div>
                 <div class="left-section">
-                    <h2 style='text-align:left'>
-                    Recent Orders
+                    <h2 style='text-align:left;font-size:18px;font-weight:600'>
+                        Recent Orders
                     </h2>
+                    <div class='order-container'>
+                        <hr style="height: 1px; background-color: #b0b0b1; border: none;" />
+
+                        <?php while ($row = $order_result->fetch_assoc()): ?>
+                        <div>
+
+                            <table style='width:100%'>
+                                <tr>
+                                    <td>ORDER PLACED<br /><span
+                                            style='font-size:13px'><?php echo htmlspecialchars(date('Y-m-d', strtotime($row['order_date']))); ?></span>
+                                    </td>
+
+                                    <td>TOTAL<br /><span style='font-size:13px'>Rs.
+                                            <?php echo htmlspecialchars($row['totalAmount']); ?></span>
+                                    </td>
+                                    <td style='text-align:right'>ORDER :
+                                        OR#<?php echo htmlspecialchars($row['orderId']); ?><br /><span
+                                            style='font-size:13px'><?php echo htmlspecialchars($row['status']); ?></span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style='width:20%'> <img src="<?php echo htmlspecialchars($row['img_url']); ?>"
+                                            alt="Item Image" style="width: 100px; height: auto;"></td>
+                                    <td style='width:40%'><span
+                                            style='font-weight:bold;font-size:17px'><?php echo htmlspecialchars($row['description']); ?></span>
+                                        <br /><span>Unit Price :
+                                            Rs.<?php echo htmlspecialchars($row['price']); ?></span>
+                                        <br /><span>Qty : <?php echo htmlspecialchars($row['quantity']); ?></span>
+                                    </td>
+                                    <td style='width:40%;text-align:right'>
+                                        <?php echo htmlspecialchars($row['delivery_name']); ?><br />
+                                        <?php echo htmlspecialchars($row['delivery_address']); ?><br />
+                                        <?php echo htmlspecialchars($row['contact']); ?>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                            <hr style="height: 1px; background-color: #b0b0b1; border: none;" />
+                        </div>
+
+
+                        <?php endwhile; ?>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- <div class="hero-image">
-        <div class="hero-text">
-            <h1>
-                <span style="color:#0074D9;background-color:white;">&nbsp;User&nbsp;</span>
-                <span style="color:white;background-color:#0074D9;margin-left:-15px;">&nbsp;Profile&nbsp;</span>
-            </h1>
-        </div>
-        </div>
 
-        <div class="trainer-card">
-            <div class="content-wrapper">
-                <div class="right-section">
-                    <img src="public/assets/images/user.png" alt="User Image">
-                    <form method="post">
-                        <button type="submit" name="logout" class="delete-button">Logout</button>
-                    </form>
-                </div>
-                <div class="left-section">
-                    <?php if ($user): ?>
-                    <h2><?php echo htmlspecialchars($user['first_name'] . " " . $user['last_name']); ?></h2>
-                    <p><strong>Email:</strong> <?php echo htmlspecialchars($user['email']); ?></p>
-                    <p><strong>Address:</strong> <?php echo htmlspecialchars($user['address']); ?></p>
-                    <?php else: ?>
-                    <p>No user details available.</p>
-                    <?php endif; ?>
-                </div>
-            </div>
-        </div> -->
 </body>
 
 </html>
