@@ -221,7 +221,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['logout'])) {
 
             <a style="padding:0px" href='./client/user-profile.php'><img src="./images/user.png" class='logo'
                     style='width:40px' alt="Logo"></a>
-
+            <a style="padding-left:10px" href='./client/order-history.php'><img src="./images/order-header.png" class='logo'
+                    style='width:40px' alt="Logo"></a>
             <?php else: ?>
             <button class="btn" onclick="document.getElementById('login').style.display='block'">SIGN
                 IN</button>&nbsp;&nbsp;&nbsp;
