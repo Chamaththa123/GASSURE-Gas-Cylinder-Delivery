@@ -279,7 +279,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['logout'])) {
         <a href="./order.php">Order Now</a>
         <a href="./feedback.php">Feedback</a>
         <?php if (isset($_SESSION['role']) && $_SESSION['role'] == 1): ?>
-        <a href="src/admin/membership-admin.php">Admin</a>
+        <a href="./admin.php">Admin</a>
         <?php endif; ?>
 
         <?php if (isset($_SESSION['user_name'])): ?>
