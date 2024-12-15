@@ -200,37 +200,105 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['logout'])) {
 .closebtn:hover {
     color: black;
 }
+
+.topnav {
+  overflow: hidden;
+  background-color: #2a3577;
+}
+
+.topnav a {
+  float: left;
+  display: block;
+  color: #f2f2f2;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+  font-size: 16px;
+}
+
+
+.topnav .icon {
+  display: none;
+}
+
+@media screen and (max-width: 600px) {
+  .topnav a:not(:first-child) {display: none;}
+  .topnav a.icon {
+    float: right;
+    display: block;
+  }
+}
+
+.split {
+    float: right;
+    display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 90px;
+    margin-right: 10px;
+    font-weight: 500;
+    background-color: transparent !important;;
+}
+
+@media screen and (max-width: 600px) {
+    @media screen and (max-width: 600px) {
+  .topnav a {
+    display: none; /* Hide all links by default on smaller screens */
+  }
+  .topnav a.icon {
+    float: right;
+    display: block; /* Display the hamburger menu icon */
+  }
+  .topnav.responsive a {
+    display: block; /* Show links when the menu is toggled */
+    text-align: left; /* Align the links to the left for better appearance */
+  }
+}
+
+    .split {
+        display: block; /* Adjust layout for mobile */
+        height: auto;          /* Let height adjust based on content */
+        margin-top: 10px;     /* Adjust margin for smaller screens */
+        float: left;
+        text-align: left;
+    }
+}
+
 </style>
 
 <body>
-    <div class="topnav">
-        <img src="../images/logo.png" class='logo' style='width:90px' alt="Logo">
-        <div class="split">
-            <a href="./../index.php">Home</a>
-            <a href="./order.php">Order Now</a>
-            <a href="./feedback.php">Feedback</a>
-            <?php if (isset($_SESSION['role']) && $_SESSION['role'] == 1): ?>
-            <a href="src/admin/membership-admin.php">Admin</a>
-            <?php endif; ?>
 
+<div class="topnav" id="myTopnav">
+    <img src="../images/logo.png" class="logo" style="width:90px" alt="Logo">
+  
+    <a href="javascript:void(0);" class="icon" onclick="myFunction()">
+        <i class="fa fa-bars"></i>
+    </a>
+    <div class="split">
+        <a href="./../index.php">Home</a>
+        <a href="./order.php">Order Now</a>
+        <a href="./feedback.php">Feedback</a>
+        <?php if (isset($_SESSION['role']) && $_SESSION['role'] == 1): ?>
+        <a href="src/admin/membership-admin.php">Admin</a>
+        <?php endif; ?>
 
-            <?php if (isset($_SESSION['user_name'])): ?>
-            <a class="user-email" style='margin-left:20px'>
-                <?php echo htmlspecialchars($_SESSION['user_name']); ?>
-            </a>
-
-            <a style="padding:0px" href='./user-profile.php'><img src="../images/user.png" class='logo'
-                    style='width:40px' alt="Logo"></a>
-            <a style="padding-left:10px" href='./order-history.php'><img src="../images/order-header.png" class='logo'
-                    style='width:40px' alt="Logo"></a>
-
-            <?php else: ?>
-            <button class="btn" onclick="document.getElementById('login').style.display='block'">SIGN
-                IN</button>&nbsp;&nbsp;&nbsp;
-            <button class="btn" onclick="document.getElementById('register').style.display='block'">SIGN UP</button>
-            <?php endif; ?>
-        </div>
+        <?php if (isset($_SESSION['user_name'])): ?>
+        <a class="user-email" style="margin-left:20px">
+            <?php echo htmlspecialchars($_SESSION['user_name']); ?>
+        </a>
+        <a style="padding:0px" href="./user-profile.php">
+            <img src="../images/user.png" class="logo" style="width:40px" alt="Logo">
+        </a>
+        <a style="padding-left:10px" href="./order-history.php">
+            <img src="../images/order-header.png" class="logo" style="width:40px" alt="Logo">
+        </a>
+        <?php else: ?>
+        <button class="btn" onclick="document.getElementById('login').style.display='block'">SIGN IN</button>
+        <button class="btn" onclick="document.getElementById('register').style.display='block'">SIGN UP</button>
+        <?php endif; ?>
     </div>
+</div>
+
 
     <!-- Display error message, if any -->
     <?php if (isset($error_message)): ?>
@@ -350,6 +418,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['logout'])) {
             }
         });
     });
+
+    function myFunction() {
+    var nav = document.getElementById("myTopnav");
+    if (nav.className === "topnav") {
+        nav.className += " responsive";
+    } else {
+        nav.className = "topnav";
+    }
+}
+
     </script>
 
 </body>
