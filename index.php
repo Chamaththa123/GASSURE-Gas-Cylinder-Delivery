@@ -4,168 +4,120 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Multi-Page Form</title>
+    <title>My PHP Project</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
     <style>
-    /* body {
-        font-family: Arial, sans-serif;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
+    body,
+    html {
+        height: 100%;
         margin: 0;
-        background-color: #f3f3f3;
     }
 
-    .form-container {
-        background: #fff;
-        padding: 20px;
-        border-radius: 8px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        width: 100%;
-        max-width: 400px;
+    .hero-image {
+        background-image: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.2)), url("./images/index3.jpg");
+        height: 90%;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: cover;
+        position: relative;
     }
 
-    .form-page {
-        display: none;
-    }
-
-    .form-page.active {
-        display: block;
-    }
-
-    .form-footer {
-        display: flex;
-        justify-content: space-between;
-        margin-top: 20px;
-    }
-
-    button {
-        padding: 10px 20px;
-        border: none;
-        border-radius: 5px;
-        background: #007bff;
+    .hero-text {
+        text-align: center;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 65%;
+        transform: translate(-50%, -50%);
         color: white;
+    }
+
+    .hero-text button {
+        border: none;
+        outline: 0;
+        display: inline-block;
+        padding: 15px 25px;
+        color: white;
+        font-size: 18px;
+        font-weight: 700;
+        background-color: #0074D9;
+        text-align: center;
         cursor: pointer;
-        font-size: 16px;
+        width: auto;
+        border-radius: 8px;
     }
 
-    button:disabled {
-        background: #ccc;
+    .container-home {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 20px;
+        padding: 20px;
     }
 
-    .result {
-        margin-top: 20px;
-        padding: 10px;
-        background: #e7f5e6;
-        border: 1px solid #b2d8b0;
-        border-radius: 5px;
-    }
-
-    table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 20px;
-    }
-
-    table,
-    th,
-    td {
-        border: 1px solid #ddd;
-    }
-
-    th,
-    td {
-        padding: 8px;
+    .column-home {
+        padding: 20px;
         text-align: left;
+        border-radius: 8px;
     }
 
-    th {
-        background-color: #f2f2f2;
-    } */
+    @media (min-width: 600px) {
+        .container-home {
+            grid-template-columns: 1fr 1fr;
+        }
+    }
     </style>
 </head>
 
 <body>
-<?php include './includes/header.php'; ?>
-    <!-- <div class="form-container">
-        <form id="multiPageForm">
-            <div class="form-page active" id="page1">
-                <label for="field1">Field 1:</label>
-                <input type="text" id="field1" name="field1" required><br>
 
-                <label for="field2">Field 2:</label>
-                <input type="text" id="field2" name="field2" required><br>
+    <!-- Header Section -->
+    <?php include './includes/header.php'; ?>
+    <!-- Main Content Section -->
+    <div class="hero-image">
+        <div class="hero-text">
+            <h1 style="font-size:55px;font-weight:650">Your Trusted Gas Partner <br/> Anytime, Anywhere!</h1>
+            <p style="font-size:20px;">
+            Experience the convenience of ordering gas cylinders anytime, anywhere.
+            Safe, reliable, and hassle-free delivery right to your doorstep!</p>
+            <button onclick="window.location.href='membership.php'">Order Now</button>
 
-                <label for="field3">Field 3:</label>
-                <input type="text" id="field3" name="field3" required>
-            </div>
+        </div>
+    </div>
+    <div class="container-home">
+        <div class="column-home">
+            <img src='public/assets/images/StockCake-Indoor Yoga Practice_1731165152.jpg'
+                style='width:80% ;border-radius:15px;height:80%' alt='contact image'>
+        </div>
+        <div class="column-home">
+            <h2 style='font-weight:600'>Discover Your Perfect Class</h2>
+            <p>FitZone offers a diverse range of classes tailored to meet all fitness levels. From high-energy cardio
+                and strength training to calming yoga and flexibility classes, there’s something for everyone. Dive into
+                our expertly designed classes led by certified trainers who will inspire and support you every step of
+                the way!</p>
+            <button onclick="window.location.href='class.php'" style='width:200px;border-radius:10px'>Explore All
+                Classes</button>
+        </div>
+    </div>
+    <div class="container-home">
+        <div class="column-home">
+            <h2 style='font-weight:600'>Connect with FitZone</h2>
+            <p>Have questions about our fitness programs or memberships? Our team is here to help! Whether you’re
+                looking for guidance on joining, or need support with ongoing membership, reach out to us anytime. We’re
+                passionate about helping you achieve your fitness goals and are just one click away!</p>
+            <button onclick="window.location.href='contactus.php'" style='width:200px;border-radius:10px'>Get in
+                Touch</button>
+        </div>
+        <div class="column-home"
+            style="float: right; width: 90%; margin-top: 40px; border-radius: 15px; height: 80%; text-align: center;">
+            <img src="public/assets/images/StockCake-Group Workout Session_1729583555.jpg"
+                style="width: 100%; height: 100%; border-radius: 15px;" alt="contact image">
+        </div>
 
-            <div class="form-page" id="page2">
-                <label for="field4">Field 4:</label>
-                <input type="text" id="field4" name="field4" required><br>
 
-                <label for="field5">Field 5:</label>
-                <input type="text" id="field5" name="field5" required><br>
+    </div>
 
-                <label for="field6">Field 6:</label>
-                <input type="text" id="field6" name="field6" required>
-            </div>
-
-            <div class="form-footer">
-                <button type="button" id="prevButton" disabled>Previous</button>
-                <button type="button" id="nextButton">Next</button>
-                <button type="submit" id="submitButton" style="display: none;">Submit</button>
-            </div>
-        </form>
-
-        <div class="result" id="result" style="display: none;"></div>
-    </div> -->
-
-    <script>
-    const pages = document.querySelectorAll('.form-page');
-    const nextButton = document.getElementById('nextButton');
-    const prevButton = document.getElementById('prevButton');
-    const submitButton = document.getElementById('submitButton');
-    const resultDiv = document.getElementById('result');
-    let currentPage = 0;
-
-    function updatePage() {
-        pages.forEach((page, index) => {
-            page.classList.toggle('active', index === currentPage);
-        });
-        prevButton.disabled = currentPage === 0;
-        nextButton.style.display = currentPage === pages.length - 1 ? 'none' : 'inline-block';
-        submitButton.style.display = currentPage === pages.length - 1 ? 'inline-block' : 'none';
-    }
-
-    nextButton.addEventListener('click', () => {
-        currentPage++;
-        updatePage();
-    });
-
-    prevButton.addEventListener('click', () => {
-        currentPage--;
-        updatePage();
-    });
-
-    document.getElementById('multiPageForm').addEventListener('submit', (e) => {
-        e.preventDefault();
-        const formData = new FormData(e.target);
-        const data = Object.fromEntries(formData.entries());
-
-        resultDiv.style.display = 'block';
-        resultDiv.innerHTML = `
-      <h4>Form Details:</h4>
-      <table>
-        <tr><th>Field</th><th>Value</th></tr>
-        ${Object.entries(data).map(([key, value]) => `<tr><td>${key}</td><td>${value}</td></tr>`).join('')}
-      </table>
-    `;
-    });
-
-    updatePage();
-    </script>
-
+    <!-- <?php include 'src/includes/footer.php'; ?> -->
 </body>
 
 </html>

@@ -30,7 +30,7 @@ if (isset($_SESSION['user_email'])) {
 
 if ($user_id !== null) {
   $order_query = $conn->prepare(
-      "SELECT * FROM notification" // Make sure the SQL query is correct
+      "SELECT * FROM item" // Make sure the SQL query is correct
   );
 
   if ($order_query) {
@@ -99,7 +99,7 @@ if ($user_id !== null) {
     div.content {
         margin-left: 160px;
         padding-left: 58px;
-        height: 100vh;
+        height: 80vh;
     }
 
     .header {
@@ -130,6 +130,48 @@ if ($user_id !== null) {
         text-align: center;
     }
 
+    .items-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        /* 3 items per row for larger screens */
+        gap: 30px;
+        /* Spacing between items */
+        padding: 10px;
+        /* width: 80%; */
+    }
+
+    .item {
+        background-color: #f8f9fa;
+        border: 1px solid #ddd;
+        border-radius: 10px;
+        padding: 15px;
+        text-align: center;
+        box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+        /* width: 20%; */
+    }
+
+    .item h3 {
+        font-size: 18px;
+        margin-bottom: 10px;
+    }
+
+    .item p {
+        font-size: 14px;
+        margin-bottom: 8px;
+    }
+
+    .item .btn {
+        background-color: #2a3577;
+        color: white;
+        padding: 10px 15px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    .item .btn:hover {
+        background-color: #1a2554;
+    }
 
     @media screen and (max-width: 700px) {
         .sidebar {
@@ -147,6 +189,11 @@ if ($user_id !== null) {
         div.content {
             margin-left: 0;
         }
+
+        .items-grid {
+            grid-template-columns: repeat(2, 1fr);
+            /* 2 items per row for medium screens */
+        }
     }
 
     @media screen and (max-width: 400px) {
@@ -160,6 +207,11 @@ if ($user_id !== null) {
             padding-left: 0px;
             padding-right: 0px
         }
+
+        .items-grid {
+            grid-template-columns: 1fr;
+            /* 1 item per row for small screens */
+        }
     }
     </style>
 </head>
@@ -171,7 +223,7 @@ if ($user_id !== null) {
             <img src="../images/logo.png" class="logo" style="width:100px" alt="Logo">
         </div>
         <br />
-        <a href="./inventory.php">Inventory</a>
+        <a class="active" href="./inventory.php">Inventory</a>
         <a href="./admin-orders.php">Orders</a>
         <a href="#contact">Contact</a>
         <a href="#about">About</a>
@@ -179,38 +231,40 @@ if ($user_id !== null) {
 
     <div style='color: #546178'>
         <div class='header'>
-            <div style='font-size:24px;font-weight:600'>Notification</div>
+            <div style='font-size:24px;font-weight:600'>Inventory</div>
             <div><a href='./notification.php'><i class="fa fa-bell"
                         style="font-size:24px;margin-right:20px;color:#546178"></i></a></div>
         </div>
         <div class="content">
             <h2>Notification</h2>
-            <div style='background-color:white;border-radius:10px'>
-                <div class='order-container'>
-                    <!-- <hr style="height: 1px; background-color: #b0b0b1; border: none;" /> -->
+            <div style="background-color: white; border-radius: 10px; padding: 20px;">
+                <div class="order-container">
+                    <div class="items-grid">
+                        <?php while ($row = $order_result->fetch_assoc()): ?>
+                        <div class="item">
+                            <h3><?php echo htmlspecialchars($row['description']); ?></h3>
+                            <div><img src="<?= $row['img_url'] ?>" alt="<?= $row['description'] ?>"
+                                    style="width:150px; height:170px;"></div>
+                            <div style='text-align:center;font-size:14px; margin-bottom:5px'>
+                                <?= $row['stock'] <= 0 ? '<span style="color:red;">Out of Stock</span>' : '<span style="color:green;">In Stock</span>' ?>
+                            </div>
+                            <div style='text-align:center;font-size:14px; margin-bottom:5px'>Available Stock:
+                                <?php echo htmlspecialchars($row['stock']); ?></div>
+                            <div style='text-align:center;font-size:14px; margin-bottom:5px'>
+                                Unit Price: Rs. <?php echo number_format((float)$row['price'], 2, '.', ''); ?>
+                            </div>
 
-                    <?php while ($row = $order_result->fetch_assoc()): ?>
-                    <div>
-
-                        <table style='width:100%;padding:15px'>
-                            <tr>
-                                <td style='width:60%'><span style='font-weight:normal;font-size:15px'><i
-                                            class="fa fa-angle-double-right"
-                                            style="font-size:18px"></i>&nbsp;&nbsp;&nbsp;&nbsp;<?php echo htmlspecialchars($row['description']); ?></span>
-                                </td>
-                                <td style='width:40%;text-align:right;font-size:13px'>
-                                    <?php echo htmlspecialchars($row['created_at']); ?><br />
-                                </td>
-                            </tr>
-                            </tbody>
-                        </table>
+                            <div style='text-align:center;font-size:14px; margin-bottom:5px'>Low Stock Level:
+                                <?php echo htmlspecialchars($row['low_stock_level']); ?></div>
+                            <!-- <p>Price: <?php echo htmlspecialchars($row['item_price']); ?></p> -->
+                            <button class="btn">View Details</button>
+                        </div>
+                        <?php endwhile; ?>
                     </div>
-
-
-                    <?php endwhile; ?>
                 </div>
             </div>
         </div>
+
     </div>
 
 </body>
