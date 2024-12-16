@@ -33,7 +33,8 @@ if ($user_id !== null) {
         "SELECT o.*, i.*, o.id AS orderId 
          FROM orders o 
          JOIN item i ON o.item_id = i.id 
-         WHERE o.user_id = ? LIMIT 3" 
+         WHERE o.user_id = ? 
+         ORDER BY o.id DESC LIMIT 3" 
     );
     $order_query->bind_param("i", $user_id);
     $order_query->execute();

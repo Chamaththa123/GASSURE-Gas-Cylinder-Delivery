@@ -293,7 +293,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['logout'])) {
             <img src="../images/order-header.png" class="logo" style="width:40px" alt="Logo">
         </a>
         <?php else: ?>
-        <button class="btn" onclick="document.getElementById('login').style.display='block'">SIGN IN</button>
+        <button class="btn" onclick="document.getElementById('login').style.display='block'">SIGN IN</button>&nbsp;&nbsp;&nbsp;
         <button class="btn" onclick="document.getElementById('register').style.display='block'">SIGN UP</button>
         <?php endif; ?>
     </div>
