@@ -80,7 +80,7 @@
             <p style="font-size:20px;">
             Experience the convenience of ordering gas cylinders anytime, anywhere.
             Safe, reliable, and hassle-free delivery right to your doorstep!</p>
-            <button onclick="window.location.href='membership.php'">Order Now</button>
+            <button onclick="window.location.href='./client/order.php'">Order Now</button>
 
         </div>
     </div>
@@ -95,7 +95,7 @@
                 and strength training to calming yoga and flexibility classes, there’s something for everyone. Dive into
                 our expertly designed classes led by certified trainers who will inspire and support you every step of
                 the way!</p>
-            <button onclick="window.location.href='class.php'" style='width:200px;border-radius:10px'>Explore All
+            <button onclick="window.location.href='./client/order.php'" style='width:200px;border-radius:10px'>Explore All
                 Classes</button>
         </div>
     </div>
