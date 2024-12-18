@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My PHP Project</title>
+    <title>Home</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <style>
@@ -88,10 +88,34 @@
         padding: 20px
     }
 
-    @media (min-width: 600px) {
-        .container-home {
+    .hero-des{
+        font-size:20px
+    }
+
+    .hero-topic{
+        font-size:55px;font-weight:650
+    }
+    .container-home {
             grid-template-columns: 1fr 1fr;
         }
+    @media (max-width: 780px) {
+        
+        .container-home {
+            grid-template-columns: 1fr;
+        }
+        .hero-des{
+        font-size:17px
+    }
+
+    .hero-topic{
+        font-size:35px;
+        font-weight:650
+    }
+    .header1 {
+        font-size: 35px;
+
+        margin-top: 20px;
+    }
     }
     </style>
 </head>
@@ -103,8 +127,8 @@
     <!-- Main Content Section -->
     <div class="hero-image">
         <div class="hero-text">
-            <h1 style="font-size:55px;font-weight:650">YOU CLICK. WE'LL DELIVER SUPER QUICK !</h1>
-            <p style="font-size:20px;">
+            <h1 class='hero-topic'>YOU CLICK. WE'LL DELIVER SUPER QUICK !</h1>
+            <p class='hero-des'>
                 Experience the convenience of ordering gas cylinders anytime, anywhere.
                 Safe, reliable, and hassle-free delivery right to your doorstep!</p>
             <button onclick="window.location.href='./client/order.php'">Order Now</button>

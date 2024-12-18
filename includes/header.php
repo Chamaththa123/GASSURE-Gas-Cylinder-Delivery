@@ -206,7 +206,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['logout'])) {
     <div class="topnav">
         <img src="images/logo.png" class='logo' style='width:90px' alt="Logo">
         <div class="split">
-            <a href="./../index.php">Home</a>
+            <a href="./index.php">Home</a>
             <a href="./client/order.php">Order Now</a>
             <a href="./client/feedback.php">Feedback</a>
             <?php if (isset($_SESSION['role']) && $_SESSION['role'] == 1): ?>
