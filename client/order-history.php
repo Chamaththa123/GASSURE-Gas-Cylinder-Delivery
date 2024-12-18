@@ -36,7 +36,7 @@ if ($user_id !== null) {
          FROM orders o 
          JOIN item i ON o.item_id = i.id 
          WHERE o.user_id = ?
-          ORDER BY i.id DESC" 
+          ORDER BY o.id DESC" 
     );
     $order_query->bind_param("i", $user_id);
     $order_query->execute();
@@ -94,8 +94,28 @@ if ($user_id !== null) {
                                 <?php echo htmlspecialchars($row['totalAmount']); ?></span>
                         </td>
                         <td style='text-align:right'>ORDER :
-                            OR#<?php echo htmlspecialchars($row['orderId']); ?><br /><span
-                                style='font-size:13px'><?php echo htmlspecialchars($row['status']); ?></span></td>
+                            OR#<?php echo htmlspecialchars($row['orderId']); ?><br />
+                            <?php
+$status = htmlspecialchars($row['status']);
+$color = '';
+
+switch ($status) {
+    case 'Pending':
+        $color = 'font-weight:bold;color: orange;padding:2px;background-color:#fed7af;border-radius:10px;padding-left:15px;padding-right:15px';
+        break;
+    case 'In Progress':
+        $color = 'font-weight:bold;color: blue;padding:2px;background-color:#71afff;border-radius:10px;padding-left:15px;padding-right:15px';
+        break;
+    case 'Delivered':
+        $color = 'font-weight:bold;color: green;padding:2px;background-color:#6dff49;border-radius:10px;padding-left:15px;padding-right:15px';
+        break;
+    default:
+        $color = 'font-weight:bold;color: black;padding:2px;background-color:orange;border-radius:10px;padding-left:15px;padding-right:15px';
+        break;
+}
+?>
+<span style="font-size:13px; <?php echo $color; ?>"><?php echo $status; ?></span>
+</td>
                     </tr>
                     <tr>
                         <td style='width:20%'> <img src="<?php echo htmlspecialchars($row['img_url']); ?>"
@@ -120,7 +140,7 @@ if ($user_id !== null) {
             <?php endwhile; ?>
         </div>
     </div>
-
+    <?php include '../includes/footer.php'; ?>
 </body>
 
 </html>
