@@ -13,6 +13,28 @@ if (!isset($conn)) {
 $item_query = $conn->prepare("SELECT id, description, img_url, stock, price, low_stock_level FROM item");
 $item_query->execute();
 $items_result = $item_query->get_result();
+
+$is_logged_in = false; // Initialize as false by default
+
+
+// Check if user is logged in
+if (isset($_SESSION['user_email'])) {
+    $user_email = $_SESSION['user_email'];
+
+    // Fetch user ID from the database
+    $user_query = $conn->prepare("SELECT id FROM users WHERE email = ?");
+    $user_query->bind_param("s", $user_email);
+    $user_query->execute();
+    $user_result = $user_query->get_result();
+    $user1 = $user_result->fetch_assoc();
+
+    if ($user1) {
+        $is_logged_in = true;  // User is logged in
+    } else {
+        echo "<script>Swal.fire('Error', 'User not found!', 'error');</script>";
+        exit;
+    }
+}
 ?>
 
 <!DOCTYPE html>
@@ -226,11 +248,17 @@ $items_result = $item_query->get_result();
                 </div>
 
                 <div class="form-footer">
-                    <button type="button" id="prevButton" disabled style='background-color:#dc3545'>
-                        < Previous</button>
-                            <button type="button" id="nextButton" style='background-color:#0d6efd'>Next ></button>
-                            <button type="submit" id="submitButton" style="display: none;">Place Order</button>
-                </div>
+    <?php if ($is_logged_in): ?>
+        <button type="button" id="prevButton" disabled style='background-color:#dc3545'>
+            < Previous
+        </button>
+        <button type="button" id="nextButton" style='background-color:#0d6efd'>Next ></button>
+        <button type="submit" id="submitButton" style="display: none;">Place Order</button>
+    <?php else: ?>
+        <p style="color: red; text-align: center;">Please log in to continue.</p>
+    <?php endif; ?>
+</div>
+
             </form>
         </div>
     </div>
@@ -449,7 +477,7 @@ $items_result = $item_query->get_result();
         $conn->commit();
 
         echo "<script>Swal.fire('Success', 'Order placed and payment processed successfully!', 'success');</script>";
-        echo "<script>setTimeout(() => { window.location.href = 'user-profile.php'; }, 2000);</script>";
+        echo "<script>setTimeout(() => { window.location.href = 'order-history.php'; }, 2000);</script>";
         exit;
 
     } catch (Exception $e) {
