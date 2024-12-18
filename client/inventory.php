@@ -85,7 +85,7 @@ if ($user_id !== null) {
                         style="font-size:24px;margin-right:20px;color:#546178"></i></a></div>
         </div>
         <div class="content">
-            <div style="background-color: white; border-radius: 10px; padding: 20px;margin-top:80px">
+            <div class="content-one">
                 <div class="order-container">
                     <div class="items-grid">
                         <?php while ($row = $order_result->fetch_assoc()): ?>
