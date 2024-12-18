@@ -113,8 +113,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delivered_order'])) {
         <br />
         <a href="./inventory.php">Inventory</a>
         <a class="active" href="./admin-orders.php">Orders</a>
-        <a href="#contact">Contact</a>
-        <a href="#about">About</a>
+        <a href="../index.php">Back</a>
     </div>
 
     <div style='color: #546178'>
@@ -124,7 +123,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delivered_order'])) {
                         style="font-size:24px;margin-right:20px;color:#546178"></i></a></div>
         </div>
         <div class="content">
-            <div style="background-color: white; border-radius: 10px; padding: 20px;margin-top:80px">
+            <div class="content-one">
 
                 <div class="table-container">
                     <table>
@@ -136,6 +135,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delivered_order'])) {
                                 <th>Item</th>
                                 <th>Unit Price</th>
                                 <th>Qty</th>
+                                <th>Total</th>
                                 <th>Delivery Details</th>
                                 <th>Payment</th>
                                 <th>Status</th>
@@ -147,20 +147,21 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delivered_order'])) {
                         if ($order_result->num_rows > 0) {
                             while ($order = $order_result->fetch_assoc()) {
                                 echo "<tr>";
-                                echo "<td data-label='Customer Name'>OR#" . htmlspecialchars($order['orderId']) . "</td>";
+                                echo "<td data-label='Order Id'>OR#" . htmlspecialchars($order['orderId']) . "</td>";
 
-                                echo "<td data-label='Phone'>" . htmlspecialchars($order['first_name']) . " " . htmlspecialchars($order['last_name']) . "</td>";
+                                echo "<td data-label='Customer'>" . htmlspecialchars($order['first_name']) . " " . htmlspecialchars($order['last_name']) . "</td>";
 
-                                echo "<td data-label='Session Type'>" . date('Y-m-d', strtotime($order['order_date'])) . "</td>";
+                                echo "<td data-label='Date'>" . date('Y-m-d', strtotime($order['order_date'])) . "</td>";
 
-                                echo "<td data-label='Date'>" . htmlspecialchars($order['description']) . "</td>";
-                                echo "<td data-label='Date'>" . htmlspecialchars($order['price']) . "</td>";
-                                echo "<td data-label='Date'>" . htmlspecialchars($order['quantity']) . "</td>";
-                                echo "<td data-label='Phone'>" . htmlspecialchars($order['delivery_name']) . ", " . htmlspecialchars($order['delivery_address']) .  ", " . htmlspecialchars($order['contact']) . "</td>";
+                                echo "<td data-label='Item'>" . htmlspecialchars($order['description']) . "</td>";
+                                echo "<td data-label='Unit Price'>" . "Rs."  . htmlspecialchars($order['price']) . "</td>";
+                                echo "<td data-label='Qty'>" . htmlspecialchars($order['quantity']) . "</td>";
+                                echo "<td data-label='Total'>" . "Rs." . htmlspecialchars($order['totalAmount']) . "</td>";
+                                echo "<td data-label='Delivery'>" . htmlspecialchars($order['delivery_name']) . ", " . htmlspecialchars($order['delivery_address']) .  ", " . htmlspecialchars($order['contact']) . "</td>";
                                
-                                echo "<td data-label='Description'>" . htmlspecialchars($order['payment_Status']) . "</td>";
+                                echo "<td data-label='Payment'>" . htmlspecialchars($order['payment_Status']) . "</td>";
                                 echo "<td data-label='Status'>" . htmlspecialchars($order['order_Status']) . "</td>";
-                                echo "<td data-label='Action'>
+                                echo "<td data-label=''>
                                         <div class='action-buttons'>";
                                 
                                 if ($order['order_Status'] == 'Pending') {

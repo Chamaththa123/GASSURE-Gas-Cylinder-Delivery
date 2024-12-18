@@ -499,7 +499,7 @@ $one_star_percentage = ($total_reviews > 0) ? ($stats['one_star'] / $total_revie
                             name="addFeedback" class="add-review-button">Write a Review</button>
                     </div>
                     <?php else: ?>
-                    <p>No user details available. Please log in to provide feedback.</p>
+                    <p style='color:red'>Please log in to provide feedback.</p>
                     <?php endif; ?>
 
 

@@ -83,8 +83,45 @@ if ($user_id !== null) {
 
             <?php while ($row = $order_result->fetch_assoc()): ?>
             <div>
-
                 <table style='width:100%'>
+                    <div style='text-align:center;font-size:14px'>In Progress</div>
+                    <div style="display: flex; align-items: center; gap:10px">
+                        <?php
+                $status = htmlspecialchars($row['status']);
+                $leftDotColor = '#b0b0b1';
+                $barStyle = "background-color: #b0b0b1;";
+                $rightDotColor = '#b0b0b1';
+
+                switch ($status) {
+                    case 'Pending':
+                        $leftDotColor = 'orange';
+                        break;
+                    case 'In Progress':
+                        $leftDotColor = 'blue';
+                        $barStyle = "background: linear-gradient(to right, blue 50%, #b0b0b1 50%);";
+                        break;
+                    case 'Delivered':
+                        $leftDotColor = 'green';
+                        $barStyle = "background-color: green;";
+                        $rightDotColor = 'green';
+                        break;
+                }
+                ?>
+
+                        <div
+                            style="width: 13px; height: 13px; background-color: <?php echo $leftDotColor; ?>; border-radius: 50%;">
+                        </div>
+                        <div style="width: 98%; height: 5px; <?php echo $barStyle; ?>"></div>
+                        <div
+                            style="width: 13px; height: 13px; background-color: <?php echo $rightDotColor; ?>; border-radius: 50%;">
+                        </div>
+                    </div>
+                    <div
+                        style="display: flex; justify-content: space-between; width: 100%;margin-bottom:15px;font-size:14px">
+                        <div>Ordered</div>
+                        <div>Delivered</div>
+                    </div>
+
                     <tr>
                         <td>ORDER PLACED<br /><span
                                 style='font-size:13px'><?php echo htmlspecialchars(date('Y-m-d', strtotime($row['order_date']))); ?></span>
@@ -96,26 +133,25 @@ if ($user_id !== null) {
                         <td style='text-align:right'>ORDER :
                             OR#<?php echo htmlspecialchars($row['orderId']); ?><br />
                             <?php
-$status = htmlspecialchars($row['status']);
-$color = '';
+                    $color = '';
 
-switch ($status) {
-    case 'Pending':
-        $color = 'font-weight:bold;color: orange;padding:2px;background-color:#fed7af;border-radius:10px;padding-left:15px;padding-right:15px';
-        break;
-    case 'In Progress':
-        $color = 'font-weight:bold;color: blue;padding:2px;background-color:#71afff;border-radius:10px;padding-left:15px;padding-right:15px';
-        break;
-    case 'Delivered':
-        $color = 'font-weight:bold;color: green;padding:2px;background-color:#6dff49;border-radius:10px;padding-left:15px;padding-right:15px';
-        break;
-    default:
-        $color = 'font-weight:bold;color: black;padding:2px;background-color:orange;border-radius:10px;padding-left:15px;padding-right:15px';
-        break;
-}
-?>
-<span style="font-size:13px; <?php echo $color; ?>"><?php echo $status; ?></span>
-</td>
+                    switch ($status) {
+                        case 'Pending':
+                            $color = 'font-weight:bold;color: orange;padding:2px;background-color:#fed7af;border-radius:10px;padding-left:15px;padding-right:15px';
+                            break;
+                        case 'In Progress':
+                            $color = 'font-weight:bold;color: blue;padding:2px;background-color:#71afff;border-radius:10px;padding-left:15px;padding-right:15px';
+                            break;
+                        case 'Delivered':
+                            $color = 'font-weight:bold;color: green;padding:2px;background-color:#6dff49;border-radius:10px;padding-left:15px;padding-right:15px';
+                            break;
+                        default:
+                            $color = 'font-weight:bold;color: black;padding:2px;background-color:orange;border-radius:10px;padding-left:15px;padding-right:15px';
+                            break;
+                    }
+                    ?>
+                            <span style="font-size:13px; <?php echo $color; ?>"> <?php echo $status; ?> </span>
+                        </td>
                     </tr>
                     <tr>
                         <td style='width:20%'> <img src="<?php echo htmlspecialchars($row['img_url']); ?>"
@@ -131,14 +167,12 @@ switch ($status) {
                             <?php echo htmlspecialchars($row['contact']); ?>
                         </td>
                     </tr>
-                    </tbody>
                 </table>
                 <hr style="height: 1px; background-color: #b0b0b1; border: none;" />
             </div>
-
-
             <?php endwhile; ?>
         </div>
+
     </div>
     <?php include '../includes/footer.php'; ?>
 </body>

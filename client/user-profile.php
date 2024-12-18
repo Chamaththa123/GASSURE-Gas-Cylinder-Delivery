@@ -45,7 +45,7 @@ if ($user_id !== null) {
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['logout'])) {
     session_unset();
     session_destroy();
-    header('Location: index.php');
+    header('Location: ../index.php');
     exit();
 }
 ?>
@@ -173,8 +173,27 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['logout'])) {
                                             <?php echo htmlspecialchars($row['totalAmount']); ?></span>
                                     </td>
                                     <td style='text-align:right'>ORDER :
-                                        OR#<?php echo htmlspecialchars($row['orderId']); ?><br /><span
-                                            style='font-size:13px'><?php echo htmlspecialchars($row['status']); ?></span>
+                                        OR#<?php echo htmlspecialchars($row['orderId']); ?><br /><?php
+                    $color = '';
+                    $status = htmlspecialchars($row['status']);
+                    switch ($status) {
+                        case 'Pending':
+                            $color = 'font-weight:bold;color: orange;padding:2px;background-color:#fed7af;border-radius:10px;padding-left:15px;padding-right:15px';
+                            break;
+                        case 'In Progress':
+                            $color = 'font-weight:bold;color: blue;padding:2px;background-color:#71afff;border-radius:10px;padding-left:15px;padding-right:15px';
+                            break;
+                        case 'Delivered':
+                            $color = 'font-weight:bold;color: green;padding:2px;background-color:#6dff49;border-radius:10px;padding-left:15px;padding-right:15px';
+                            break;
+                        default:
+                            $color = 'font-weight:bold;color: black;padding:2px;background-color:orange;border-radius:10px;padding-left:15px;padding-right:15px';
+                            break;
+                    }
+                    ?>
+                                        <span style="font-size:13px; <?php echo $color; ?>"> <?php echo $status; ?>
+                                        </span>
+                                    </td>
                                     </td>
                                 </tr>
                                 <tr>
