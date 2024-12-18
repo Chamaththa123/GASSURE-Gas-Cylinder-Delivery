@@ -42,7 +42,8 @@ body {
 div.content {
     margin-left: 160px;
     padding-left: 58px;
-    height: 80vh;
+    height: auto;
+    padding-bottom:20px
 }
 
 .header {
@@ -231,7 +232,7 @@ button:hover {
         padding: 20px;
         padding-left: 16%;
         position:relative;
-        width: 100%;
+        /* width: 100%; */
     /* margin-top:100px; */
         /* z-index: 1900; */
     }

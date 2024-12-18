@@ -74,8 +74,7 @@ if ($user_id !== null) {
         <br />
         <a class="active" href="./inventory.php">Inventory</a>
         <a href="./admin-orders.php">Orders</a>
-        <a href="#contact">Contact</a>
-        <a href="#about">About</a>
+        <a href="../index.php">Back</a>
     </div>
 
     <div style='color: #546178'>
