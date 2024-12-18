@@ -204,7 +204,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['logout'])) {
             </div>
         </div>
     </div>
-
+    <?php include '../includes/footer.php'; ?>
 
 </body>
 

@@ -105,6 +105,33 @@ $items_result = $item_query->get_result();
         border: 1px solid #ccc;
         border-radius: 4px;
     }
+
+    /* Existing styles remain unchanged */
+
+/* Existing styles remain unchanged */
+
+@media (max-width: 768px) {
+    #items-container {
+        flex-wrap: wrap;
+        /* Allow items to wrap to the next row */
+        justify-content: center;
+        /* Center items horizontally */
+        gap: 20px;
+        /* Adjust gap for smaller screens */
+    }
+
+    .item-container {
+        width: 100%;
+        /* Take full width of the container */
+        max-width: 300px;
+        /* Optional: Limit the width of the item for better alignment */
+        margin: 0 auto 10px;
+        /* Center the item and add spacing between rows */
+    }
+    
+}
+
+
     </style>
 </head>
 
@@ -432,6 +459,7 @@ $items_result = $item_query->get_result();
 }
 
     ?>
+     <?php include '../includes/footer.php'; ?>
 </body>
 
 </html>

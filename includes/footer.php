@@ -58,12 +58,12 @@
 <body>
     <div class="container-contact-f">
         <div class="column-contact-f-1 column-1">
-            Copyright © 2025 FitZone. All rights reserved.
+            Copyright © 2025 GASSURE. All rights reserved.
         </div>
         <div class="column-contact-f-2 column-2">
-            <a class="nav" href="index.php">Home</a>
-            <a class="nav" href="#membership">Order Now</a>
-            <a class="nav" href="trainer.php">Feedback</a>
+            <a class="nav" href="./index.php">Home</a>
+            <a class="nav" href="./client/order.php">Order Now</a>
+            <a class="nav" href="./client/feedback.php">Feedback</a>
         </div>
     </div>
 </body>

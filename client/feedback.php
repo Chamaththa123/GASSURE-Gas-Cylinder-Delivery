@@ -431,6 +431,9 @@ $one_star_percentage = ($total_reviews > 0) ? ($stats['one_star'] / $total_revie
         font-size: 14px;
     }
 
+    .main-margin{
+        margin: 40px
+    }
     /* Stack sections vertically on smaller screens */
     @media (max-width: 768px) {
 
@@ -444,13 +447,26 @@ $one_star_percentage = ($total_reviews > 0) ? ($stats['one_star'] / $total_revie
             width: 100%;
             /* Stack feedback items on top of each other */
         }
+
+        .main-margin{
+        margin: 20px
+    }
+
+    .progress-container {
+        flex: 2;
+        position: relative;
+        height: 13px;
+        background-color: #f1f1f1;
+        border-radius: 15px;
+        overflow: hidden;
+    }
     }
     </style>
 </head>
 
 <body>
     <?php include './header.php'; ?>
-    <div style='margin: 40px'>
+    <div class='main-margin'>
         <div style='font-size: 15px; color: #cd0a0a; font-weight: medium;'>Home / Customer Reviews</div>
 
         <div style='margin-top:50px'>
@@ -639,7 +655,7 @@ $one_star_percentage = ($total_reviews > 0) ? ($stats['one_star'] / $total_revie
         }
     });
     </script>
-
+<?php include '../includes/footer.php'; ?>
 </body>
 
 </html>
