@@ -57,7 +57,8 @@ if ($user_id !== null) {
     .order-container {
         width: 100%;
         padding-left: 100px;
-        padding-right: 100px
+        padding-right: 100px;
+        min-height: 50vh
     }
 
     @media (max-width: 768px) {
@@ -171,6 +172,11 @@ if ($user_id !== null) {
                 <hr style="height: 1px; background-color: #b0b0b1; border: none;" />
             </div>
             <?php endwhile; ?>
+            <?php if ($order_result->num_rows == 0): ?>
+                <div style="text-align: center; font-size: 15px; margin-top: 50px; color: #546178;">
+            No orders available.
+        </div>
+                <?php endif; ?>
         </div>
 
     </div>
