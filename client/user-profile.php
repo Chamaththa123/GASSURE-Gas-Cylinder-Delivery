@@ -218,6 +218,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['logout'])) {
 
 
                         <?php endwhile; ?>
+                        <?php if ($order_result->num_rows == 0): ?>
+                <div style="text-align: center; font-size: 15px; margin-top: 50px; color: #546178;">
+            No orders available.
+        </div>
+                <?php endif; ?>
                     </div>
                 </div>
             </div>

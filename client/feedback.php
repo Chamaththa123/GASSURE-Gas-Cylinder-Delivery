@@ -475,11 +475,21 @@ $one_star_percentage = ($total_reviews > 0) ? ($stats['one_star'] / $total_revie
             <div class="content-wrapper">
                 <div class="right-section">
                     <div style="text-align:center;"><span
-                            style='font-size:25px'><?php echo number_format($stats['average_rating'], 1); ?>/</span><span>5</span>
+                            style='font-size:25px'><?php 
+        $average_rating = $stats['average_rating'] ?? 0; // Default to 0 if null
+        echo number_format($average_rating, 1); 
+        ?>/</span><span>5</span>
                     </div>
                     <div class="average-stars">
                         <center><?php
-                $average = $stats['average_rating'];
+                        $average = $stats['average_rating'] ?? 0; // Default to 0 if null
+               if ($average <= 0) {
+                // Display all empty stars if average is null or 0
+                for ($i = 1; $i <= 5; $i++) {
+                    echo '<span class="star empty">★</span>';
+                }
+            } else {
+                // Display stars based on the average rating
                 for ($i = 1; $i <= 5; $i++) {
                     if ($i <= floor($average)) {
                         echo '<span class="star full">★</span>'; // Full star
@@ -489,9 +499,10 @@ $one_star_percentage = ($total_reviews > 0) ? ($stats['one_star'] / $total_revie
                         echo '<span class="star empty">★</span>'; // Empty star
                     }
                 }
+            }
                 ?></center>
                     </div>
-                    <div style="text-align:center;font-size:16px"><?php echo $stats['total_reviews']; ?> Reviews
+                    <div style="text-align:center;font-size:16px"><?php echo $stats['total_reviews']?? 0; ?> Reviews
                     </div>
                     <?php if ($user): ?>
                     <div>
@@ -509,7 +520,7 @@ $one_star_percentage = ($total_reviews > 0) ? ($stats['one_star'] / $total_revie
                         <ul>
                             <li class="review-item">
                                 <span class="review-text"><strong>5-Star :</strong>
-                                    <?php echo $stats['five_star']; ?></span>
+                                    <?php echo $stats['five_star'] ?? 0; ?></span>
                                 <div class="progress-container">
                                     <div class="progress-bar" style="width: <?php echo $five_star_percentage; ?>%;">
                                     </div>
@@ -517,7 +528,7 @@ $one_star_percentage = ($total_reviews > 0) ? ($stats['one_star'] / $total_revie
                             </li>
                             <li class="review-item">
                                 <span class="review-text"><strong>4-Star :</strong>
-                                    <?php echo $stats['four_star']; ?></span>
+                                    <?php echo $stats['four_star']?? 0; ?></span>
                                 <div class="progress-container">
                                     <div class="progress-bar" style="width: <?php echo $four_star_percentage; ?>%;">
                                     </div>
@@ -525,7 +536,7 @@ $one_star_percentage = ($total_reviews > 0) ? ($stats['one_star'] / $total_revie
                             </li>
                             <li class="review-item">
                                 <span class="review-text"><strong>3-Star :</strong>
-                                    <?php echo $stats['three_star']; ?></span>
+                                    <?php echo $stats['three_star']?? 0; ?></span>
                                 <div class="progress-container">
                                     <div class="progress-bar" style="width: <?php echo $three_star_percentage; ?>%;">
                                     </div>
@@ -533,7 +544,7 @@ $one_star_percentage = ($total_reviews > 0) ? ($stats['one_star'] / $total_revie
                             </li>
                             <li class="review-item">
                                 <span class="review-text"><strong>2-Star :</strong>
-                                    <?php echo $stats['two_star']; ?></span>
+                                    <?php echo $stats['two_star']?? 0; ?></span>
                                 <div class="progress-container">
                                     <div class="progress-bar" style="width: <?php echo $two_star_percentage; ?>%;">
                                     </div>
@@ -541,7 +552,7 @@ $one_star_percentage = ($total_reviews > 0) ? ($stats['one_star'] / $total_revie
                             </li>
                             <li class="review-item">
                                 <span class="review-text"><strong>1-Star :</strong>
-                                    <?php echo $stats['one_star']; ?></span>
+                                    <?php echo $stats['one_star']?? 0; ?></span>
                                 <div class="progress-container">
                                     <div class="progress-bar" style="width: <?php echo $one_star_percentage; ?>%;">
                                     </div>

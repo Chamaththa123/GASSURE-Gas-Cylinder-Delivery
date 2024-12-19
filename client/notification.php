@@ -72,7 +72,7 @@ if ($user_id !== null) {
         </div>
         <br />
         <a href="./inventory.php">Inventory</a>
-        <a class="active" href="./admin-orders.php">Orders</a>
+        <a href="./admin-orders.php">Orders</a>
         <a href="../index.php">Back</a>
     </div>
 
@@ -104,6 +104,11 @@ if ($user_id !== null) {
 
 
                     <?php endwhile; ?>
+                    <?php if ($order_result->num_rows == 0): ?>
+                <div style="text-align: center; font-size: 15px; margin-top: 50px; color: #546178;">
+            No Notification available.
+        </div>
+                <?php endif; ?>
             </div>
         </div>
 
