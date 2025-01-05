@@ -88,34 +88,39 @@
         padding: 20px
     }
 
-    .hero-des{
-        font-size:20px
+    .hero-des {
+        font-size: 20px
     }
 
-    .hero-topic{
-        font-size:55px;font-weight:650
+    .hero-topic {
+        font-size: 55px;
+        font-weight: 650
     }
+
     .container-home {
-            grid-template-columns: 1fr 1fr;
-        }
+        grid-template-columns: 1fr 1fr;
+    }
+
     @media (max-width: 780px) {
-        
+
         .container-home {
             grid-template-columns: 1fr;
         }
-        .hero-des{
-        font-size:17px
-    }
 
-    .hero-topic{
-        font-size:35px;
-        font-weight:650
-    }
-    .header1 {
-        font-size: 35px;
+        .hero-des {
+            font-size: 17px
+        }
 
-        margin-top: 20px;
-    }
+        .hero-topic {
+            font-size: 35px;
+            font-weight: 650
+        }
+
+        .header1 {
+            font-size: 35px;
+
+            margin-top: 20px;
+        }
     }
     </style>
 </head>

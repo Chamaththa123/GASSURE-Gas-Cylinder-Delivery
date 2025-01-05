@@ -113,52 +113,6 @@ if ($user_id !== null) {
         </div>
 
     </div>
-    <!-- <div class="sidebar">
-        <div class="logo-container">
-            <img src="../images/logo.png" class="logo" style="width:100px" alt="Logo">
-        </div>
-        <br />
-        <a href="./inventory.php">Inventory</a>
-        <a href="./admin-orders.php">Orders</a>
-        <a href="../index.php">Back</a>
-    </div>
-
-    <div style='color: #546178'>
-        <div class='header'>
-            <div style='font-size:24px;font-weight:600'>Notification</div>
-
-        </div>
-        <div class="content">
-        <div class="content-one">
-            <h2>Notification</h2>
-            <div style='background-color:white;border-radius:10px'>
-                <div class='order-container'>
-
-
-                    <?php while ($row = $order_result->fetch_assoc()): ?>
-                    <div>
-
-                        <table style='width:100%;padding:15px'>
-                            <tr>
-                                <td style='width:60%'><span style='font-weight:normal;font-size:15px'><i
-                                            class="fa fa-angle-double-right"
-                                            style="font-size:18px"></i>&nbsp;&nbsp;&nbsp;&nbsp;<?php echo htmlspecialchars($row['description']); ?></span>
-                                </td>
-                                <td style='width:40%;text-align:right;font-size:13px'>
-                                    <?php echo htmlspecialchars($row['created_at']); ?><br />
-                                </td>
-                            </tr>
-                            </tbody>
-                        </table>
-                    </div>
-
-
-                    <?php endwhile; ?>
-                </div>
-            </div>
-            </div>
-        </div>
-    </div> -->
 
 </body>
 
