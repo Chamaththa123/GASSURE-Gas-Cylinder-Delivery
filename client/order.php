@@ -263,7 +263,10 @@ if (isset($_SESSION['user_email'])) {
     <div id="invoice-details" style="text-align: left; font-size: 16px;">
         <!-- Invoice details will be populated dynamically -->
     </div>
-    <button type="button" id="downloadInvoice" style="margin-top: 20px; background-color:#0d6efd;">Download Invoice</button>
+    <button type="button" id="downloadInvoice" style="margin-top: 20px; background-color:#0d6efd; display:none;">
+    Download Invoice
+</button>
+
 </div>
 
                 <div class="form-footer">
@@ -366,7 +369,7 @@ if (isset($_SESSION['user_email'])) {
         const contact = document.getElementById('contact').value;
 
         const invoiceDetails = `
-            <p><strong>Order Summary</strong></p>
+            <p style="font-weight:600; font-size:20px; margin-bottom:30px;"><strong>Order Summary</strong></p>
             <p>Item ID: ${itemId}</p> 
             <p>Item Name: ${itemDescription}</p>
             <p>Price per Unit: Rs. ${itemPrice.toFixed(2)}</p>
@@ -412,7 +415,35 @@ if (isset($_SESSION['user_email'])) {
             }
         });
 
-       
+        document.getElementById('downloadInvoice').style.display = 'none';
+
+// Add an event listener to the submit button
+document.getElementById('submitButton').addEventListener('click', (event) => {
+    event.preventDefault(); // Prevent default form submission
+
+    const form = document.getElementById('multiPageForm');
+    const formData = new FormData(form);
+
+    fetch('', {
+        method: 'POST',
+        body: formData
+    })
+        .then((response) => response.text())
+        .then((data) => {
+            // Display the success message and show the "Download Invoice" button
+            document.getElementById('submitButton').style.display = 'none';
+    document.getElementById('prevButton').style.display = 'none';
+    document.getElementById('downloadInvoice').style.display = 'inline-block';
+            Swal.fire('Success', 'Order placed successfully!', 'success');
+
+            // Optionally, update the invoice details (already populated in your PHP)
+            // Stay on the same page and prevent any redirection
+        })
+        .catch((error) => {
+            Swal.fire('Error', 'Something went wrong!', 'error');
+        });
+});
+
         updatePage();
     </script>
 <script>
@@ -543,8 +574,10 @@ if (isset($_SESSION['user_email'])) {
         // Commit transaction
         $conn->commit();
 
-        echo "<script>Swal.fire('Success', 'Order placed and payment processed successfully!', 'success');</script>";
-        echo "<script>setTimeout(() => { window.location.href = 'order-history.php'; }, 2000);</script>";
+        echo "<script>
+            Swal.fire('Success', 'Order placed and payment processed successfully!', 'success');
+            document.getElementById('downloadInvoice').style.display = 'block';
+            document.getElementById('submitButton').style.display = 'none';  </script>";
         exit;
 
     } catch (Exception $e) {
