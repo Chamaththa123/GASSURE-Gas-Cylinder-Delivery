@@ -45,6 +45,10 @@ if (isset($_SESSION['user_email'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Place Order</title>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
     <style>
     .form-page {
@@ -246,6 +250,14 @@ if (isset($_SESSION['user_email'])) {
                         </div>
                     </div>
                 </div>
+<!-- Add the new invoice page to the form -->
+<div class="form-page" id="page4">
+    <p style="font-weight:600; font-size:20px; margin-bottom:30px;">Invoice</p>
+    <div id="invoice-details" style="text-align: left; font-size: 16px;">
+        <!-- Invoice details will be populated dynamically -->
+    </div>
+    <button type="button" id="downloadInvoice" style="margin-top: 20px; background-color:#0d6efd;">Download Invoice</button>
+</div>
 
                 <div class="form-footer">
     <?php if ($is_logged_in): ?>
@@ -263,124 +275,163 @@ if (isset($_SESSION['user_email'])) {
         </div>
     </div>
 
-    <script>
-    const pages = document.querySelectorAll('.form-page');
-    const nextButton = document.getElementById('nextButton');
-    const prevButton = document.getElementById('prevButton');
-    const submitButton = document.getElementById('submitButton');
-    const quantityInput = document.getElementById('quantity');
-    const decrementButton = document.getElementById('decrement');
-    const incrementButton = document.getElementById('increment');
-    const selectedPriceInput = document.getElementById('selected_price');
+     <script>
+        const pages = document.querySelectorAll('.form-page');
+        const nextButton = document.getElementById('nextButton');
+        const prevButton = document.getElementById('prevButton');
+        const submitButton = document.getElementById('submitButton');
+        const quantityInput = document.getElementById('quantity');
+        const decrementButton = document.getElementById('decrement');
+        const incrementButton = document.getElementById('increment');
+        const selectedPriceInput = document.getElementById('selected_price');
 
-    let currentPage = 0;
+        let currentPage = 0;
 
-    function updatePage() {
-        pages.forEach((page, index) => {
-            page.classList.toggle('active', index === currentPage);
-        });
-        prevButton.disabled = currentPage === 0;
-        nextButton.style.display = currentPage === pages.length - 1 ? 'none' : 'inline-block';
-        submitButton.style.display = currentPage === pages.length - 1 ? 'inline-block' : 'none';
-    }
+        function updatePage() {
+            pages.forEach((page, index) => {
+                page.classList.toggle('active', index === currentPage);
+            });
+            prevButton.disabled = currentPage === 0;
+            nextButton.style.display = currentPage === pages.length - 1 ? 'none' : 'inline-block';
+            submitButton.style.display = currentPage === pages.length - 1 ? 'inline-block' : 'none';
+        }
 
-    function validateDeliveryDetails() {
+        nextButton.addEventListener('click', () => {
+    if (currentPage === 0) {
+        const selectedItem = document.querySelector('input[name="item_id"]:checked');
+        if (!selectedItem) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Select an Item',
+                text: 'Please select an item to proceed.',
+            });
+            return;
+        }
+        const maxQuantity = parseInt(selectedItem.dataset.stock);
+        if (parseInt(quantityInput.value) > maxQuantity) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Insufficient Stock',
+                text: `Only ${maxQuantity} items are available in stock.`,
+            });
+            return;
+        }
+        selectedPriceInput.value = selectedItem.dataset.price;
+    } else if (currentPage === 1) {
         const deliveryName = document.getElementById('delivery_name').value.trim();
         const deliveryAddress = document.getElementById('delivery_address').value.trim();
         const contact = document.getElementById('contact').value.trim();
-
         if (!deliveryName || !deliveryAddress || !contact) {
             Swal.fire({
-                icon: 'warning',
-                title: 'Missing Delivery Details',
-                text: 'Please fill in all the delivery details.',
+                icon: 'error',
+                title: 'Missing Details',
+                text: 'Please fill out all required fields.',
             });
-            return false;
+            return;
         }
-        return true;
-    }
-
-    function validatePaymentDetails() {
-        const cardType = document.getElementById('card_type').value;
-        const cardNo = document.getElementById('card_no').value.trim();
-        const expMonth = document.getElementById('exp_month').value.trim();
-        const expYear = document.getElementById('exp_year').value.trim();
-        const cvv = document.getElementById('cvv').value.trim();
-
-        if (!cardType || !cardNo || !expMonth || !expYear || !cvv) {
+    } else if (currentPage === 2) {
+        const cardNo = document.getElementById('card_no').value;
+        const expMonth = document.getElementById('exp_month').value;
+        const expYear = document.getElementById('exp_year').value;
+        const cvv = document.getElementById('cvv').value;
+        if (!cardNo || !expMonth || !expYear || !cvv) {
             Swal.fire({
-                icon: 'warning',
+                icon: 'error',
                 title: 'Missing Payment Details',
-                text: 'Please fill in all the payment details.',
+                text: 'Please fill out all payment details.',
             });
-            return false;
+            return;
         }
-        return true;
+
+        // Populate the Invoice Section on Page 4
+        const selectedItem = document.querySelector('input[name="item_id"]:checked');
+        const itemPrice = parseFloat(selectedItem.dataset.price);
+        const quantity = parseInt(quantityInput.value);
+        const totalPrice = (itemPrice * quantity).toFixed(2);
+        const deliveryName = document.getElementById('delivery_name').value;
+        const deliveryAddress = document.getElementById('delivery_address').value;
+        const contact = document.getElementById('contact').value;
+
+        const invoiceDetails = `
+            <p><strong>Order Summary</strong></p>
+            <p>Price per Unit: Rs. ${itemPrice.toFixed(2)}</p>
+            <p>Quantity: ${quantity}</p>
+            <p>Total Price: Rs. ${totalPrice}</p>
+            <hr>
+            <p><strong>Delivery Details</strong></p>
+            <p>Name: ${deliveryName}</p>
+            <p>Address: ${deliveryAddress}</p>
+            <p>Contact: ${contact}</p>
+            <hr>
+            <p><strong>Payment Summary</strong></p>
+            <p>Card Type: ${document.getElementById('card_type').value}</p>
+            <p>Card Number: **** **** **** ${document.getElementById('card_no').value.slice(-4)}</p>
+        `;
+
+        document.getElementById('invoice-details').innerHTML = invoiceDetails;
     }
 
-    nextButton.addEventListener('click', () => {
-        if (currentPage === 0) {
-            const selectedItem = document.querySelector('input[name="item_id"]:checked');
-            if (!selectedItem) {
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'Missing Select Item',
-                    text: 'Select an item!',
-                });
-                return;
-            }
-            const maxQuantity = parseInt(selectedItem.dataset.stock);
-            if (parseInt(quantityInput.value) > maxQuantity) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Insufficient Stock',
-                    text: `Only ${maxQuantity} items are available in stock.`,
-                });
-                return;
-            }
-            selectedPriceInput.value = selectedItem.dataset.price;
-        } else if (currentPage === 1) {
-            if (!validateDeliveryDetails()) return;
-        }
-
-        currentPage++;
-        updatePage();
-    });
-
-    prevButton.addEventListener('click', () => {
-        currentPage--;
-        updatePage();
-    });
-
-    submitButton.addEventListener('click', (e) => {
-        if (!validatePaymentDetails()) {
-            e.preventDefault();
-        }
-    });
-
-    decrementButton.addEventListener('click', () => {
-        const currentQuantity = parseInt(quantityInput.value);
-        quantityInput.value = Math.max(1, currentQuantity - 1);
-    });
-
-    incrementButton.addEventListener('click', () => {
-        const selectedItem = document.querySelector('input[name="item_id"]:checked');
-        if (selectedItem) {
-            const maxQuantity = parseInt(selectedItem.dataset.stock);
-            const currentQuantity = parseInt(quantityInput.value);
-            quantityInput.value = Math.min(maxQuantity, currentQuantity + 1);
-        } else {
-            Swal.fire({
-                icon: 'warning',
-                title: 'Warning',
-                text: 'Please select an item first!',
-            });
-        }
-    });
-
+    currentPage++;
     updatePage();
-    </script>
+});
 
+
+        prevButton.addEventListener('click', () => {
+            currentPage--;
+            updatePage();
+        });
+
+        decrementButton.addEventListener('click', () => {
+            const currentValue = parseInt(quantityInput.value, 10);
+            if (currentValue > 1) {
+                quantityInput.value = currentValue - 1;
+            }
+        });
+
+        incrementButton.addEventListener('click', () => {
+            const currentValue = parseInt(quantityInput.value, 10);
+            const selectedItem = document.querySelector('input[name="item_id"]:checked');
+            const maxQuantity = selectedItem ? parseInt(selectedItem.dataset.stock) : Infinity;
+            if (currentValue < maxQuantity) {
+                quantityInput.value = currentValue + 1;
+            }
+        });
+
+       
+        updatePage();
+    </script>
+<script>
+     document.getElementById('downloadInvoice').addEventListener('click', () => {
+    const { jsPDF } = window.jspdf;
+
+    // Create a new jsPDF instance
+    const doc = new jsPDF();
+
+    // Get the content of the invoice section
+    const invoiceContent = document.getElementById('invoice-details');
+
+    // Ensure content exists before proceeding
+    if (!invoiceContent) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Invoice details are missing!',
+        });
+        return;
+    }
+
+    // Add content to the PDF
+    doc.html(invoiceContent, {
+        callback: function (doc) {
+            // Save the PDF with a custom name
+            doc.save('invoice.pdf');
+        },
+        x: 10,
+        y: 10,
+    });
+});
+
+</script>
 
     <?php
    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
