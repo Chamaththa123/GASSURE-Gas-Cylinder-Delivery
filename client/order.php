@@ -16,6 +16,13 @@ $items_result = $item_query->get_result();
 
 $is_logged_in = false; // Initialize as false by default
 
+//fetch item details for 4th page according to item id
+$item_query = $conn->prepare("SELECT id, description, price, stock, img_url FROM item WHERE id = ?");
+$item_query->bind_param("i", $item_id);
+$item_query->execute();
+$item_result = $item_query->get_result();
+$selected_item = $item_result->fetch_assoc();
+
 
 // Check if user is logged in
 if (isset($_SESSION['user_email'])) {
@@ -180,7 +187,7 @@ if (isset($_SESSION['user_email'])) {
                             <div style="display: flex; justify-content: center; align-items: center;">
                                 <input type="radio" name="item_id" id="radio_<?= $item['id'] ?>"
                                     value="<?= $item['id'] ?>" data-price="<?= $item['price'] ?>"
-                                    data-stock="<?= $item['stock'] ?>" required>
+                                    data-stock="<?= $item['stock'] ?>"  data-description="<?= htmlspecialchars($item['description'], ENT_QUOTES, 'UTF-8') ?>" required>
                             </div>
                             <?php endif; ?>
                             <label for="radio_<?= $item['id'] ?>">
@@ -345,7 +352,13 @@ if (isset($_SESSION['user_email'])) {
 
         // Populate the Invoice Section on Page 4
         const selectedItem = document.querySelector('input[name="item_id"]:checked');
+        if (!selectedItem) {
+        alert("Please select an item before proceeding to the invoice.");
+        return;
+    }
+        const itemId = selectedItem.value;
         const itemPrice = parseFloat(selectedItem.dataset.price);
+        const itemDescription = selectedItem.dataset.description;
         const quantity = parseInt(quantityInput.value);
         const totalPrice = (itemPrice * quantity).toFixed(2);
         const deliveryName = document.getElementById('delivery_name').value;
@@ -354,6 +367,8 @@ if (isset($_SESSION['user_email'])) {
 
         const invoiceDetails = `
             <p><strong>Order Summary</strong></p>
+            <p>Item ID: ${itemId}</p> 
+            <p>Item Name: ${itemDescription}</p>
             <p>Price per Unit: Rs. ${itemPrice.toFixed(2)}</p>
             <p>Quantity: ${quantity}</p>
             <p>Total Price: Rs. ${totalPrice}</p>
@@ -481,6 +496,7 @@ if (isset($_SESSION['user_email'])) {
     $exp_month = $_POST['exp_month'];
     $exp_year = $_POST['exp_year'];
     $cvv = $_POST['cvv'];
+    $item_description = $item['description'];
 
     // Start transaction
     $conn->begin_transaction();
