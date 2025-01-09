@@ -376,7 +376,6 @@ if (isset($_SESSION['user_email'])) {
         const invoiceDetails = `
             <p style="font-weight:600; font-size:20px; margin-bottom:30px;"><strong>Order Summary</strong></p>
             <p>Item ID: ${itemId}</p> 
-            
             <p>Item Name: ${itemDescription}</p>
             <p>Price per Unit: Rs. ${itemPrice.toFixed(2)}</p>
             <p>Quantity: ${quantity}</p>
@@ -453,42 +452,34 @@ document.getElementById('submitButton').addEventListener('click', (event) => {
         updatePage();
     </script>
 <script>
-document.getElementById('downloadInvoice').addEventListener('click', () => {
-    const { jsPDF } = window.jspdf;  
-    const doc = new jsPDF({
-    orientation: "portrait",
-    unit: "mm",
-    format: [200, 200], // Custom width and height in mm
-});
+    document.getElementById('downloadInvoice').addEventListener('click', () => {
+    const { jsPDF } = window.jspdf;  // Destructuring the jsPDF object
+    const doc = new jsPDF();
 
+    // Customize the styles
+    doc.setFont("helvetica", "bold"); // Set font to bold
+    doc.setFontSize(18);  // Increase the font size to 18 (or adjust as needed)
 
-    // Helper function to center text
-    const centerText = (text, yPosition, fontSize = 12, font = "helvetica", style = "normal") => {
-        doc.setFont(font, style);
-        doc.setFontSize(fontSize);
-        const textWidth = doc.getStringUnitWidth(text) * fontSize / doc.internal.scaleFactor;
-        const pageWidth = doc.internal.pageSize.width;
-        const xPosition = (pageWidth - textWidth) / 2;
-        doc.text(text, xPosition, yPosition);
-    };
+    // Center the "Invoice" text on the page
+    const text = "**************************INVOICE**************************";
+    const textWidth = doc.getStringUnitWidth(text) * doc.getFontSize() / doc.internal.scaleFactor;
+    const pageWidth = doc.internal.pageSize.width;
+    const x = (pageWidth - textWidth) / 2;  // Calculate the X position for center alignment
 
-    // Add title and company details
-    centerText("RECEIPT", 20, 18, "helvetica", "bold");
-    centerText("GASSURE (PVT) LTD", 27, 12, "helvetica", "semi-bold");
-    centerText("Tel : 011-2345534", 33, 10);
+    // Add the "Invoice" text at the calculated position
+    doc.text(text, x, 20);   // Adds "Invoice" at position (14, 20)
 
-    const deliveryName = document.getElementById('delivery_name').value;
-    const deliveryAddress = document.getElementById('delivery_address').value;
-    const contact = document.getElementById('contact').value;
+    doc.setFontSize(10);  // Change font size to 14 (for a different text)
+    doc.setFont("helvetica", "normal");  // Set font to normal (non-bold)
 
-    // Add sample text
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(10);
-    doc.text(`Customer : ${deliveryName}`, 14, 45);
-    doc.text(`Address : ${deliveryAddress}`,14, 50);
-    doc.text(`Phone : ${contact}`,14, 55);
+    const anotherText = "This is a sample invoice for your order.";
+    const anotherTextX = 20;  // X position for this text
+    const anotherTextY = 30;  // Y position (below the "Invoice" text)
 
-    // Gather selected item details
+    // Add the new text to the PDF
+    doc.text(anotherText, anotherTextX, anotherTextY); 
+
+    // Gather the dynamic data
     const selectedItem = document.querySelector('input[name="item_id"]:checked');
     if (!selectedItem) {
         Swal.fire({
@@ -499,43 +490,46 @@ document.getElementById('downloadInvoice').addEventListener('click', () => {
         return;
     }
 
-    // Extract dynamic data
-    const itemDescription = selectedItem.dataset.description;
+    // Extract item details
+    const itemId = selectedItem.value;  // Assuming you have a data-name attribute
     const itemPrice = parseFloat(selectedItem.dataset.price);
+    const itemDescription = selectedItem.dataset.description;
     const quantity = parseInt(document.getElementById('quantity').value);
     const totalPrice = (itemPrice * quantity).toFixed(2);
 
-    // Define table data
+    // Define table columns and rows (including the dynamic data)
     const tableColumns = ["Item Name", "Unit Price", "Quantity", "Total"];
     const tableRows = [
         [itemDescription, `Rs. ${itemPrice.toFixed(2)}`, quantity, `Rs. ${totalPrice}`]
     ];
 
-    // Add table using autoTable plugin
+    // Add the table using the autoTable plugin
     doc.autoTable({
-        head: [tableColumns],
-        body: tableRows,
-        startY: 65, // Position below the sample text
-        theme: "grid",
+        head: [tableColumns], // Column headers
+        body: tableRows, // Row data
+        startY: 30,  // Position where the table starts (below the "Invoice" text)
+        theme: "grid", // You can change the table theme (grid, stripped, etc.)
         headStyles: {
-            fillColor: [187, 187, 187 ], // Blue header background
-            textColor: [0, 0, 0], // White header text
-            fontStyle: "bold",
+            fillColor: [0, 0, 255], // Header background color (blue)
+            textColor: [255, 255, 255], // Header text color (white)
+            fontStyle: 'bold', // Header text style
         },
         bodyStyles: {
-            textColor: [0, 0, 0], // Black body text
+            textColor: [0, 0, 0], // Body text color (black)
         },
+        margin: { top: 10 },  // Top margin
     });
 
-    // Add total amount below the table
-    doc.text(`Total Amount: Rs. ${totalPrice}`, 14, doc.lastAutoTable.finalY + 10);
-    centerText("============================ Thank You ============================", 120,14, "helvetica", "medium");
-    centerText("Glad to see you again !!", 125,10, "helvetica", "normal");
-    // Save the PDF with a custom name
-    doc.save('GASSURE-RECEIPT.pdf');
-});
-</script>
+    // Add custom text below the table (e.g., Total or Payment Summary)
+    doc.text("Total Amount: Rs. " + totalPrice, 14, doc.lastAutoTable.finalY + 10);  // Position after the table
 
+    // Save the PDF with a custom name
+    doc.save('invoice.pdf');
+});
+
+
+
+</script>
 
     <?php
    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -635,9 +629,7 @@ document.getElementById('downloadInvoice').addEventListener('click', () => {
         echo "<script>
             Swal.fire('Success', 'Order placed and payment processed successfully!', 'success');
             document.getElementById('downloadInvoice').style.display = 'block';
-            document.getElementById('submitButton').style.display = 'none';  
-            window.orderId = {$order_id};
-            </script>";
+            document.getElementById('submitButton').style.display = 'none';  </script>";
         exit;
 
     } catch (Exception $e) {
