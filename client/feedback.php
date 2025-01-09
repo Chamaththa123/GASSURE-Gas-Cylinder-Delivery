@@ -431,9 +431,10 @@ $one_star_percentage = ($total_reviews > 0) ? ($stats['one_star'] / $total_revie
         font-size: 14px;
     }
 
-    .main-margin{
+    .main-margin {
         margin: 40px
     }
+
     /* Stack sections vertically on smaller screens */
     @media (max-width: 768px) {
 
@@ -448,18 +449,18 @@ $one_star_percentage = ($total_reviews > 0) ? ($stats['one_star'] / $total_revie
             /* Stack feedback items on top of each other */
         }
 
-        .main-margin{
-        margin: 20px
-    }
+        .main-margin {
+            margin: 20px
+        }
 
-    .progress-container {
-        flex: 2;
-        position: relative;
-        height: 13px;
-        background-color: #f1f1f1;
-        border-radius: 15px;
-        overflow: hidden;
-    }
+        .progress-container {
+            flex: 2;
+            position: relative;
+            height: 13px;
+            background-color: #f1f1f1;
+            border-radius: 15px;
+            overflow: hidden;
+        }
     }
     </style>
 </head>
@@ -474,8 +475,7 @@ $one_star_percentage = ($total_reviews > 0) ? ($stats['one_star'] / $total_revie
                 Reviews</div>
             <div class="content-wrapper">
                 <div class="right-section">
-                    <div style="text-align:center;"><span
-                            style='font-size:25px'><?php 
+                    <div style="text-align:center;"><span style='font-size:25px'><?php 
         $average_rating = $stats['average_rating'] ?? 0; // Default to 0 if null
         echo number_format($average_rating, 1); 
         ?>/</span><span>5</span>
@@ -666,7 +666,7 @@ $one_star_percentage = ($total_reviews > 0) ? ($stats['one_star'] / $total_revie
         }
     });
     </script>
-<?php include '../includes/footer.php'; ?>
+    <?php include './footer.php'; ?>
 </body>
 
 </html>

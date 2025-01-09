@@ -52,12 +52,12 @@ if (isset($_SESSION['user_email'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Place Order</title>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-<!-- Include jsPDF -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <!-- Include jsPDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
-<!-- Include jsPDF AutoTable Plugin -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.21/jspdf.plugin.autotable.min.js"></script>
+    <!-- Include jsPDF AutoTable Plugin -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.21/jspdf.plugin.autotable.min.js"></script>
 
 
 
@@ -96,18 +96,17 @@ if (isset($_SESSION['user_email'])) {
     #items-container {
         display: flex;
         flex-wrap: nowrap;
-        /* Ensures items stay in the same row */
+
         gap: 125px;
-        /* Adds space between items */
+
         overflow-x: auto;
-        /* Allows horizontal scrolling if items exceed the container width */
+
         cursor: pointer;
     }
 
     .item-container {
         text-align: center;
         flex: 0 0 auto;
-        /* Prevents items from shrinking or growing */
         width: 50%;
         cursor: pointer;
     }
@@ -144,32 +143,28 @@ if (isset($_SESSION['user_email'])) {
         border-radius: 4px;
     }
 
-    /* Existing styles remain unchanged */
-
-/* Existing styles remain unchanged */
-
-@media (max-width: 768px) {
-    #items-container {
-        flex-wrap: wrap;
-        /* Allow items to wrap to the next row */
-        justify-content: center;
-        /* Center items horizontally */
-        gap: 20px;
-        /* Adjust gap for smaller screens */
-    }
-
-    .item-container {
-        width: 100%;
-        /* Take full width of the container */
-        max-width: 300px;
-        /* Optional: Limit the width of the item for better alignment */
-        margin: 0 auto 10px;
-        /* Center the item and add spacing between rows */
-    }
     
-}
 
+    @media (max-width: 768px) {
+        #items-container {
+            flex-wrap: wrap;
+           
+            justify-content: center;
+            
+            gap: 20px;
+            
+        }
 
+        .item-container {
+            width: 100%;
+            
+            max-width: 300px;
+            
+            margin: 0 auto 10px;
+            
+        }
+
+    }
     </style>
 </head>
 
@@ -192,7 +187,9 @@ if (isset($_SESSION['user_email'])) {
                             <div style="display: flex; justify-content: center; align-items: center;">
                                 <input type="radio" name="item_id" id="radio_<?= $item['id'] ?>"
                                     value="<?= $item['id'] ?>" data-price="<?= $item['price'] ?>"
-                                    data-stock="<?= $item['stock'] ?>"  data-description="<?= htmlspecialchars($item['description'], ENT_QUOTES, 'UTF-8') ?>" required>
+                                    data-stock="<?= $item['stock'] ?>"
+                                    data-description="<?= htmlspecialchars($item['description'], ENT_QUOTES, 'UTF-8') ?>"
+                                    required>
                             </div>
                             <?php endif; ?>
                             <label for="radio_<?= $item['id'] ?>">
@@ -262,118 +259,141 @@ if (isset($_SESSION['user_email'])) {
                         </div>
                     </div>
                 </div>
-<!-- Add the new invoice page to the form -->
-<div class="form-page" id="page4">
-    <div id="invoice-details" style="text-align: left; font-size: 16px;">
-        <!-- Invoice details will be populated dynamically -->
-    </div>
-    <button type="button" id="downloadInvoice" style="margin-top: 20px; background-color:#0d6efd; display:none;">
-    Download Invoice
-</button>
+                <!-- Add the new invoice page to the form -->
+                <div class="form-page" id="page4">
+                    <div id="invoice-details" style="text-align: left; font-size: 16px;">
+                        <!-- Invoice details will be populated dynamically -->
+                    </div>
+                    <button type="button" id="downloadInvoice"
+                        style="margin-top: 50px; background-color:#0d6efd; display:none; width:150px;">
+                        Download Invoice
+                    </button>
 
-</div>
+                </div>
 
                 <div class="form-footer">
-    <?php if ($is_logged_in): ?>
-        <button type="button" id="prevButton" disabled style='background-color:#dc3545'>
-            < Previous
-        </button>
-        <button type="button" id="nextButton" style='background-color:#0d6efd'>Next ></button>
-        <button type="submit" id="submitButton" style="display: none;">Place Order</button>
-    <?php else: ?>
-        <p style="color: red; text-align: center;">Please log in to continue.</p>
-    <?php endif; ?>
-</div>
+                    <?php if ($is_logged_in): ?>
+                    <button type="button" id="prevButton" disabled style='background-color:#dc3545'>
+                        < Previous </button>
+                            <button type="button" id="nextButton" style='background-color:#0d6efd'>Next ></button>
+                            <button type="submit" id="submitButton" style="display: none;">Place Order</button>
+                            <?php else: ?>
+                            <p style="color: red; text-align: center;">Please log in to continue.</p>
+                            <?php endif; ?>
+                </div>
 
             </form>
         </div>
     </div>
 
-     <script>
-        const pages = document.querySelectorAll('.form-page');
-        const nextButton = document.getElementById('nextButton');
-        const prevButton = document.getElementById('prevButton');
-        const submitButton = document.getElementById('submitButton');
-        const quantityInput = document.getElementById('quantity');
-        const decrementButton = document.getElementById('decrement');
-        const incrementButton = document.getElementById('increment');
-        const selectedPriceInput = document.getElementById('selected_price');
+    <script>
+    const pages = document.querySelectorAll('.form-page');
+    const nextButton = document.getElementById('nextButton');
+    const prevButton = document.getElementById('prevButton');
+    const submitButton = document.getElementById('submitButton');
+    const quantityInput = document.getElementById('quantity');
+    const decrementButton = document.getElementById('decrement');
+    const incrementButton = document.getElementById('increment');
+    const selectedPriceInput = document.getElementById('selected_price');
 
-        let currentPage = 0;
+    let currentPage = 0;
 
-        function updatePage() {
-            pages.forEach((page, index) => {
-                page.classList.toggle('active', index === currentPage);
-            });
-            prevButton.disabled = currentPage === 0;
-            nextButton.style.display = currentPage === pages.length - 1 ? 'none' : 'inline-block';
-            submitButton.style.display = currentPage === pages.length - 1 ? 'inline-block' : 'none';
-        }
-
-        nextButton.addEventListener('click', () => {
-    if (currentPage === 0) {
-        const selectedItem = document.querySelector('input[name="item_id"]:checked');
-        if (!selectedItem) {
-            Swal.fire({
-                icon: 'warning',
-                title: 'Select an Item',
-                text: 'Please select an item to proceed.',
-            });
-            return;
-        }
-        const maxQuantity = parseInt(selectedItem.dataset.stock);
-        if (parseInt(quantityInput.value) > maxQuantity) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Insufficient Stock',
-                text: `Only ${maxQuantity} items are available in stock.`,
-            });
-            return;
-        }
-        selectedPriceInput.value = selectedItem.dataset.price;
-    } else if (currentPage === 1) {
-        const deliveryName = document.getElementById('delivery_name').value.trim();
-        const deliveryAddress = document.getElementById('delivery_address').value.trim();
-        const contact = document.getElementById('contact').value.trim();
-        if (!deliveryName || !deliveryAddress || !contact) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Missing Details',
-                text: 'Please fill out all required fields.',
-            });
-            return;
-        }
-    } else if (currentPage === 2) {
-        const cardNo = document.getElementById('card_no').value;
-        const expMonth = document.getElementById('exp_month').value;
-        const expYear = document.getElementById('exp_year').value;
-        const cvv = document.getElementById('cvv').value;
-        if (!cardNo || !expMonth || !expYear || !cvv) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Missing Payment Details',
-                text: 'Please fill out all payment details.',
-            });
-            return;
-        }
-
-        // Populate the Invoice Section on Page 4
-        const selectedItem = document.querySelector('input[name="item_id"]:checked');
-        if (!selectedItem) {
-        alert("Please select an item before proceeding to the invoice.");
-        return;
+    function updatePage() {
+        pages.forEach((page, index) => {
+            page.classList.toggle('active', index === currentPage);
+        });
+        prevButton.disabled = currentPage === 0;
+        nextButton.style.display = currentPage === pages.length - 1 ? 'none' : 'inline-block';
+        submitButton.style.display = currentPage === pages.length - 1 ? 'inline-block' : 'none';
     }
-        const itemId = selectedItem.value;
-        const itemPrice = parseFloat(selectedItem.dataset.price);
-        const itemDescription = selectedItem.dataset.description;
-        const quantity = parseInt(quantityInput.value);
-        const totalPrice = (itemPrice * quantity).toFixed(2);
-        const deliveryName = document.getElementById('delivery_name').value;
-        const deliveryAddress = document.getElementById('delivery_address').value;
-        const contact = document.getElementById('contact').value;
 
-        const invoiceDetails = `
-            <p style="font-weight:500; font-size:20px; margin-bottom:30px;">Order Summary</p>
+    nextButton.addEventListener('click', () => {
+        if (currentPage === 0) {
+            const selectedItem = document.querySelector('input[name="item_id"]:checked');
+            if (!selectedItem) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Select an Item',
+                    text: 'Please select an item to proceed.',
+                });
+                return;
+            }
+            const maxQuantity = parseInt(selectedItem.dataset.stock);
+            if (parseInt(quantityInput.value) > maxQuantity) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Insufficient Stock',
+                    text: `Only ${maxQuantity} items are available in stock.`,
+                });
+                return;
+            }
+            selectedPriceInput.value = selectedItem.dataset.price;
+        } else if (currentPage === 1) {
+            const deliveryName = document.getElementById('delivery_name').value.trim();
+            const deliveryAddress = document.getElementById('delivery_address').value.trim();
+            const contact = document.getElementById('contact').value.trim();
+            if (!deliveryName || !deliveryAddress || !contact) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Missing Details',
+                    text: 'Please fill out all required fields.',
+                });
+                return;
+            }
+        } else if (currentPage === 2) {
+            const cardNo = document.getElementById('card_no').value;
+            const expMonth = document.getElementById('exp_month').value;
+            const expYear = document.getElementById('exp_year').value;
+            const cvv = document.getElementById('cvv').value;
+            if (!cardNo || !expMonth || !expYear || !cvv) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Missing Payment Details',
+                    text: 'Please fill out all payment details.',
+                });
+                return;
+            }
+
+            // Validate Card Number: 16 digits, only numbers
+            const cardNoRegex = /^\d{16}$/;
+            if (!cardNo || !cardNoRegex.test(cardNo)) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Invalid Card Number',
+                    text: 'Please enter a valid 16-digit card number.',
+                });
+                return;
+            }
+
+            // Validate CVV: 3 digits, only numbers
+            const cvvRegex = /^\d{3}$/;
+            if (!cvv || !cvvRegex.test(cvv)) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Invalid CVV',
+                    text: 'Please enter a valid 3-digit CVV.',
+                });
+                return;
+            }
+
+
+            // Populate the Invoice Section on Page 4
+            const selectedItem = document.querySelector('input[name="item_id"]:checked');
+            if (!selectedItem) {
+                alert("Please select an item before proceeding to the invoice.");
+                return;
+            }
+            const itemId = selectedItem.value;
+            const itemPrice = parseFloat(selectedItem.dataset.price);
+            const itemDescription = selectedItem.dataset.description;
+            const quantity = parseInt(quantityInput.value);
+            const totalPrice = (itemPrice * quantity).toFixed(2);
+            const deliveryName = document.getElementById('delivery_name').value;
+            const deliveryAddress = document.getElementById('delivery_address').value;
+            const contact = document.getElementById('contact').value;
+
+            const invoiceDetails = `
+            <p><strong>Order Summary</strong></p>
             <p style="font-size:15px; margin-bottom:-15px;">Item Name: ${itemDescription}</p>
             <p style="font-size:15px; margin-bottom:-15px;">Price per Unit: Rs. ${itemPrice.toFixed(2)}</p>
             <p style="font-size:15px; margin-bottom:-15px;">Quantity: ${quantity}</p>
@@ -389,149 +409,200 @@ if (isset($_SESSION['user_email'])) {
             <p style="font-size:15px; margin-bottom:-15px;">Card Number: **** **** **** ${document.getElementById('card_no').value.slice(-4)}</p>
         `;
 
-        document.getElementById('invoice-details').innerHTML = invoiceDetails;
-    }
+            document.getElementById('invoice-details').innerHTML = invoiceDetails;
+        }
 
-    currentPage++;
-    updatePage();
-});
-
-
-        prevButton.addEventListener('click', () => {
-            currentPage--;
-            updatePage();
-        });
-
-        decrementButton.addEventListener('click', () => {
-            const currentValue = parseInt(quantityInput.value, 10);
-            if (currentValue > 1) {
-                quantityInput.value = currentValue - 1;
-            }
-        });
-
-        incrementButton.addEventListener('click', () => {
-            const currentValue = parseInt(quantityInput.value, 10);
-            const selectedItem = document.querySelector('input[name="item_id"]:checked');
-            const maxQuantity = selectedItem ? parseInt(selectedItem.dataset.stock) : Infinity;
-            if (currentValue < maxQuantity) {
-                quantityInput.value = currentValue + 1;
-            }
-        });
-
-        document.getElementById('downloadInvoice').style.display = 'none';
-
-// Add an event listener to the submit button
-document.getElementById('submitButton').addEventListener('click', (event) => {
-    event.preventDefault(); // Prevent default form submission
-
-    const form = document.getElementById('multiPageForm');
-    const formData = new FormData(form);
-
-    fetch('', {
-        method: 'POST',
-        body: formData
-    })
-        .then((response) => response.text())
-        .then((data) => {
-            // Display the success message and show the "Download Invoice" button
-            document.getElementById('submitButton').style.display = 'none';
-    document.getElementById('prevButton').style.display = 'none';
-    document.getElementById('downloadInvoice').style.display = 'inline-block';
-            Swal.fire('Success', 'Order placed successfully!', 'success');
-
-            // Optionally, update the invoice details (already populated in your PHP)
-            // Stay on the same page and prevent any redirection
-        })
-        .catch((error) => {
-            Swal.fire('Error', 'Something went wrong!', 'error');
-        });
-});
-
+        currentPage++;
         updatePage();
-    </script>
-<script>
-document.getElementById('downloadInvoice').addEventListener('click', () => {
-    const { jsPDF } = window.jspdf;  
-    const doc = new jsPDF({
-    orientation: "portrait",
-    unit: "mm",
-    format: [200, 200], // Custom width and height in mm
-});
-
-
-    // Helper function to center text
-    const centerText = (text, yPosition, fontSize = 12, font = "helvetica", style = "normal") => {
-        doc.setFont(font, style);
-        doc.setFontSize(fontSize);
-        const textWidth = doc.getStringUnitWidth(text) * fontSize / doc.internal.scaleFactor;
-        const pageWidth = doc.internal.pageSize.width;
-        const xPosition = (pageWidth - textWidth) / 2;
-        doc.text(text, xPosition, yPosition);
-    };
-
-    // Add title and company details
-    centerText("RECEIPT", 20, 18, "helvetica", "bold");
-    centerText("GASSURE (PVT) LTD", 27, 12, "helvetica", "semi-bold");
-    centerText("Tel : 011-2345534", 33, 10);
-
-    const deliveryName = document.getElementById('delivery_name').value;
-    const deliveryAddress = document.getElementById('delivery_address').value;
-    const contact = document.getElementById('contact').value;
-
-    // Add sample text
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(10);
-    doc.text(`Customer : ${deliveryName}`, 14, 45);
-    doc.text(`Address : ${deliveryAddress}`,14, 50);
-    doc.text(`Phone : ${contact}`,14, 55);
-
-    // Gather selected item details
-    const selectedItem = document.querySelector('input[name="item_id"]:checked');
-    if (!selectedItem) {
-        Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: 'Please select an item to generate the invoice.',
-        });
-        return;
-    }
-
-    // Extract dynamic data
-    const itemDescription = selectedItem.dataset.description;
-    const itemPrice = parseFloat(selectedItem.dataset.price);
-    const quantity = parseInt(document.getElementById('quantity').value);
-    const totalPrice = (itemPrice * quantity).toFixed(2);
-
-    // Define table data
-    const tableColumns = ["Item Name", "Unit Price", "Quantity", "Total"];
-    const tableRows = [
-        [itemDescription, `Rs. ${itemPrice.toFixed(2)}`, quantity, `Rs. ${totalPrice}`]
-    ];
-
-    // Add table using autoTable plugin
-    doc.autoTable({
-        head: [tableColumns],
-        body: tableRows,
-        startY: 65, // Position below the sample text
-        theme: "grid",
-        headStyles: {
-            fillColor: [187, 187, 187 ], // Blue header background
-            textColor: [0, 0, 0], // White header text
-            fontStyle: "bold",
-        },
-        bodyStyles: {
-            textColor: [0, 0, 0], // Black body text
-        },
     });
 
-    // Add total amount below the table
-    doc.text(`Total Amount: Rs. ${totalPrice}`, 14, doc.lastAutoTable.finalY + 10);
-    centerText("============================ Thank You ============================", 120,14, "helvetica", "medium");
-    centerText("Glad to see you again !!", 125,10, "helvetica", "normal");
-    // Save the PDF with a custom name
-    doc.save('GASSURE-RECEIPT.pdf');
-});
-</script>
+
+    prevButton.addEventListener('click', () => {
+        currentPage--;
+        updatePage();
+    });
+
+    decrementButton.addEventListener('click', () => {
+        const currentValue = parseInt(quantityInput.value, 10);
+        if (currentValue > 1) {
+            quantityInput.value = currentValue - 1;
+        }
+    });
+
+    incrementButton.addEventListener('click', () => {
+        const currentValue = parseInt(quantityInput.value, 10);
+        const selectedItem = document.querySelector('input[name="item_id"]:checked');
+        const maxQuantity = selectedItem ? parseInt(selectedItem.dataset.stock) : Infinity;
+        if (currentValue < maxQuantity) {
+            quantityInput.value = currentValue + 1;
+        }
+    });
+
+    document.getElementById('downloadInvoice').style.display = 'none';
+
+    // Add an event listener to the submit button
+    document.getElementById('submitButton').addEventListener('click', (event) => {
+        event.preventDefault(); // Prevent default form submission
+
+        const form = document.getElementById('multiPageForm');
+        const formData = new FormData(form);
+
+        fetch('', {
+                method: 'POST',
+                body: formData
+            })
+            .then((response) => response.text())
+            .then((data) => {
+                // Display the success message and show the "Download Invoice" button
+                document.getElementById('submitButton').style.display = 'none';
+                document.getElementById('prevButton').style.display = 'none';
+                document.getElementById('downloadInvoice').style.display = 'inline-block';
+                Swal.fire('Success', 'Order placed successfully!', 'success');
+
+                // Optionally, update the invoice details (already populated in your PHP)
+                // Stay on the same page and prevent any redirection
+            })
+            .catch((error) => {
+                Swal.fire('Error', 'Something went wrong!', 'error');
+            });
+    });
+
+    updatePage();
+    </script>
+    <script>
+    document.getElementById('downloadInvoice').addEventListener('click', () => {
+        const {
+            jsPDF
+        } = window.jspdf;
+
+        fetch('fetch_latest_order.php', {
+                method: 'GET',
+            })
+            .then(response => response.json())
+            .then(orderData => {
+                if (!orderData.success) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: orderData.message || 'Failed to fetch order details.',
+                    });
+                    return;
+                }
+
+                const {
+                    order_id,
+                    user,
+                    order_date
+                } = orderData;
+                console.log('orderData', orderData)
+                const doc = new jsPDF({
+                    orientation: "portrait",
+                    unit: "mm",
+                    format: [200, 200], // Custom width and height in mm
+                });
+
+                // Helper function to center text
+                const centerText = (text, yPosition, fontSize = 12, font = "helvetica", style =
+                    "normal") => {
+                    doc.setFont(font, style);
+                    doc.setFontSize(fontSize);
+                    const textWidth = doc.getStringUnitWidth(text) * fontSize / doc.internal
+                        .scaleFactor;
+                    const pageWidth = doc.internal.pageSize.width;
+                    const xPosition = (pageWidth - textWidth) / 2;
+                    doc.text(text, xPosition, yPosition);
+                };
+
+                // Add title and company details
+                centerText("RECEIPT", 20, 18, "helvetica", "bold");
+                centerText("GASSURE (PVT) LTD", 27, 12, "helvetica", "semi-bold");
+                centerText("Tel : 011-2345534 | Email: contact@gassure.com", 33, 10);
+                centerText("123 Gas Avenue, Colombo, Sri Lanka", 39, 10);
+
+                // Use data from orderData
+                doc.setFont("helvetica", "bold");
+                doc.setFontSize(11);
+                // doc.text(`Customer : ${delivery_name}`, 14, 45);
+                doc.text(`ORDER :  OR#${order_id}`, 14, 55);
+                doc.setFont("helvetica", "normal");
+                doc.setFontSize(10);
+                doc.text(`Customer :  ${user.first_name} ${user.last_name}`, 14, 65);
+                doc.text(`Email :  ${user.email}`, 14, 70);
+                const orderDate = new Date(order_date).toISOString().split('T')[
+                    0]; // Extracts the date portion
+                doc.text(`Date :  ${orderDate}`, 14, 75);
+                // doc.text(`Address : ${delivery_address}`, 14, 50);
+                // doc.text(`Phone : ${contact}`, 14, 55);
+
+                // Gather selected item details
+                const selectedItem = document.querySelector('input[name="item_id"]:checked');
+                if (!selectedItem) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Please select an item to generate the invoice.',
+                    });
+                    return;
+                }
+
+                // Extract dynamic data
+                const itemDescription = selectedItem.dataset.description;
+                const itemPrice = parseFloat(selectedItem.dataset.price);
+                const quantity = parseInt(document.getElementById('quantity').value);
+                const totalPrice = (itemPrice * quantity).toFixed(2);
+
+                // Define table data
+                const tableColumns = ["Item Name", "Unit Price", "Quantity", "Total"];
+                const tableRows = [
+                    [itemDescription, `Rs. ${itemPrice.toFixed(2)}`, quantity, `Rs. ${totalPrice}`]
+                ];
+
+                // Add table using autoTable plugin
+                doc.autoTable({
+                    head: [tableColumns],
+                    body: tableRows,
+                    startY: 80, // Position below the sample text
+                    theme: "grid",
+                    headStyles: {
+                        fillColor: [187, 187, 187], // Blue header background
+                        textColor: [0, 0, 0], // White header text
+                        fontStyle: "bold",
+                    },
+                    bodyStyles: {
+                        textColor: [0, 0, 0], // Black body text
+                    },
+                });
+
+                // Add total amount below the table
+                doc.text(`Total Amount: Rs. ${totalPrice}`, 14, doc.lastAutoTable.finalY + 10);
+                doc.text(`Payment : Paid`, 14, doc.lastAutoTable.finalY + 15);
+                doc.setFont("helvetica", "normal");
+
+                doc.setFontSize(9);
+                doc.text(
+                    `- We will notify you of any delays, and you will be updated with tracking information once the order ships.`,
+                    14, doc.lastAutoTable.finalY + 30);
+                doc.text(
+                    `- Ensure someone is available at the provided address to receive the package. Delivery cannot be rescheduled `,
+                    14, doc.lastAutoTable.finalY + 35);
+                doc.text(`  once dispatched`, 14, doc.lastAutoTable.finalY + 40);
+                centerText("============================ Thank You ============================", 175, 14,
+                    "helvetica", "medium");
+                centerText("Glad to see you again !!", 180, 10, "helvetica", "normal");
+
+                // Save the PDF with a custom name
+                doc.save('GASSURE-RECEIPT.pdf');
+            })
+            .catch(error => {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'An error occurred while fetching order details.',
+                });
+                console.error('Fetch error:', error);
+            });
+    });
+    </script>
 
 
     <?php
@@ -644,7 +715,7 @@ document.getElementById('downloadInvoice').addEventListener('click', () => {
 }
 
     ?>
-     <?php include '../includes/footer.php'; ?>
+    <?php include './footer.php'; ?>
 </body>
 
 </html>
