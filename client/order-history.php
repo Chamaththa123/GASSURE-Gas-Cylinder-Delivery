@@ -180,7 +180,7 @@ if ($user_id !== null) {
         </div>
 
     </div>
-    <?php include '../includes/footer.php'; ?>
+    <?php include './footer.php'; ?>
 </body>
 
 </html>
