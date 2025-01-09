@@ -264,7 +264,6 @@ if (isset($_SESSION['user_email'])) {
                 </div>
 <!-- Add the new invoice page to the form -->
 <div class="form-page" id="page4">
-    <p style="font-weight:600; font-size:20px; margin-bottom:30px;">Invoice</p>
     <div id="invoice-details" style="text-align: left; font-size: 16px;">
         <!-- Invoice details will be populated dynamically -->
     </div>
@@ -374,22 +373,20 @@ if (isset($_SESSION['user_email'])) {
         const contact = document.getElementById('contact').value;
 
         const invoiceDetails = `
-            <p style="font-weight:600; font-size:20px; margin-bottom:30px;"><strong>Order Summary</strong></p>
-            <p>Item ID: ${itemId}</p> 
-            
-            <p>Item Name: ${itemDescription}</p>
-            <p>Price per Unit: Rs. ${itemPrice.toFixed(2)}</p>
-            <p>Quantity: ${quantity}</p>
-            <p>Total Price: Rs. ${totalPrice}</p>
+            <p style="font-weight:500; font-size:20px; margin-bottom:30px;">Order Summary</p>
+            <p style="font-size:15px; margin-bottom:-15px;">Item Name: ${itemDescription}</p>
+            <p style="font-size:15px; margin-bottom:-15px;">Price per Unit: Rs. ${itemPrice.toFixed(2)}</p>
+            <p style="font-size:15px; margin-bottom:-15px;">Quantity: ${quantity}</p>
+            <p style="font-size:15px; margin-bottom:-15px;">Total Price: Rs. ${totalPrice}</p>
             <hr>
             <p><strong>Delivery Details</strong></p>
-            <p>Name: ${deliveryName}</p>
-            <p>Address: ${deliveryAddress}</p>
-            <p>Contact: ${contact}</p>
+            <p style="font-size:15px; margin-bottom:-15px;">Name: ${deliveryName}</p>
+            <p style="font-size:15px; margin-bottom:-15px;">Address: ${deliveryAddress}</p>
+            <p style="font-size:15px; margin-bottom:-15px;">Contact: ${contact}</p>
             <hr>
             <p><strong>Payment Summary</strong></p>
-            <p>Card Type: ${document.getElementById('card_type').value}</p>
-            <p>Card Number: **** **** **** ${document.getElementById('card_no').value.slice(-4)}</p>
+            <p style="font-size:15px; margin-bottom:-15px;">Card Type: ${document.getElementById('card_type').value}</p>
+            <p style="font-size:15px; margin-bottom:-15px;">Card Number: **** **** **** ${document.getElementById('card_no').value.slice(-4)}</p>
         `;
 
         document.getElementById('invoice-details').innerHTML = invoiceDetails;
