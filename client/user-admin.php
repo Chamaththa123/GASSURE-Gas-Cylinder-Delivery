@@ -84,8 +84,10 @@ if ($user_query) {
     </div>
 
     <div style='color: #546178'>
-        <div class='header'>
-            <div style='font-size:24px;font-weight:600'>Customer Management</div>
+    <div class='header'>
+            <div style='font-size:24px;font-weight:600'>Customers</div>
+            <div><a href='./notification.php'><i class="fa fa-bell"
+                        style="font-size:24px;margin-right:20px;color:#546178"></i></a></div>
         </div>
         <div class="content">
             <div class="content-one">

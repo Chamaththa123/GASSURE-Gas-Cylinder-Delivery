@@ -73,6 +73,7 @@ if ($user_id !== null) {
         <br />
         <a href="./inventory.php">Inventory</a>
         <a href="./admin-orders.php">Orders</a>
+        <a href="./user-admin.php">Customers</a>
         <a href="../index.php">Back</a>
     </div>
 
