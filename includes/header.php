@@ -8,33 +8,38 @@ if (!isset($conn)) {
 }
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    if (isset($_POST['login'])) {
-        $email = $_POST['email'];
-        $password = $_POST['password'];
-
-        $stmt = $conn->prepare("SELECT * FROM users WHERE email = ?");
-        $stmt->bind_param("s", $email);
-        $stmt->execute();
-        $result = $stmt->get_result();
-
-        if ($result->num_rows == 1) {
-            $user = $result->fetch_assoc();
-            if (password_verify($password, $user['password'])) {
-                $_SESSION['user_email'] = $user['email'];
-                $_SESSION['user_name'] = $user['first_name'];
-                $_SESSION['id'] = $user['id'];
-                $_SESSION['role'] = $user['role'];
-                $success_message = "Login successful!";
-                header('Location: ' . $_SERVER['PHP_SELF']);
-                exit();
+    if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+        if (isset($_POST['login'])) {
+            $email = $_POST['email'];
+            $password = $_POST['password'];
+    
+            $stmt = $conn->prepare("SELECT * FROM users WHERE email = ?");
+            $stmt->bind_param("s", $email);
+            $stmt->execute();
+            $result = $stmt->get_result();
+    
+            if ($result->num_rows == 1) {
+                $user = $result->fetch_assoc();
+    
+                // Check account status
+                if ($user['status'] == 0) {
+                    $error_message = "Your account is deactivated. Please contact the company for assistance.";
+                } else if (password_verify($password, $user['password'])) {
+                    $_SESSION['user_email'] = $user['email'];
+                    $_SESSION['user_name'] = $user['first_name'];
+                    $_SESSION['id'] = $user['id'];
+                    $_SESSION['role'] = $user['role'];
+                    $success_message = "Login successful!";
+                    header('Location: ' . $_SERVER['PHP_SELF']);
+                    exit();
+                } else {
+                    $error_message = "Invalid password!";
+                }
             } else {
-                $error_message = "Invalid password!";
+                $error_message = "No user found with this email!";
             }
-        } else {
-            $error_message = "No user found with this email!";
         }
-        
-    }
+    }    
 
 if (isset($_POST['register'])) {
     $first_name = $_POST['first_name'];
@@ -352,7 +357,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['logout'])) {
                 <form method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>"
                     style='margin-top:20px;margin-bottom:20px;'>
                     <label for="email"><b>Email *</b></label>
-                    <input type="text" placeholder="Enter Email" name="email">
+                    <input type="email" placeholder="Enter Email" name="email">
 
                     <label for="password"><b>Password *</b></label>
                     <input type="password" placeholder="Enter Password" name="password">

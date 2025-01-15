@@ -352,7 +352,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['logout'])) {
                 <form method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>"
                     style='margin-top:20px;margin-bottom:20px;'>
                     <label for="email"><b>Email *</b></label>
-                    <input type="text" placeholder="Enter Email" name="email">
+                    <input type="email" placeholder="Enter Email" name="email">
 
                     <label for="password"><b>Password *</b></label>
                     <input type="password" placeholder="Enter Password" name="password">

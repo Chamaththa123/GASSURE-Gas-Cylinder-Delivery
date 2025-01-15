@@ -113,6 +113,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delivered_order'])) {
         <br />
         <a href="./inventory.php">Inventory</a>
         <a class="active" href="./admin-orders.php">Orders</a>
+        <a href="./user-admin.php">Customers</a>
         <a href="../index.php">Back</a>
     </div>
 
