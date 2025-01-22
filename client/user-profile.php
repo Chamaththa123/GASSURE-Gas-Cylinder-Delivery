@@ -144,6 +144,23 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['logout'])) {
                     <h2 style='text-align:center'>
                         <?php echo htmlspecialchars($user['first_name'] . " " . $user['last_name']); ?>
                     </h2>
+                    <?php 
+        $imageSrc = "../images/user.png";
+        if ($user) {
+            if ($user['type'] === 'Residential') {
+                $imageSrc = "../images/house.png";
+            } elseif ($user['type'] === 'Business') {
+                $imageSrc = "../images/vendor.png";
+            }
+        }
+    ?>
+                    <p
+                        style="display: flex; align-items: center; justify-content: left; gap: 20px;margin-top:40px;margin-bottom:40px">
+                        <img src="<?php echo htmlspecialchars($imageSrc); ?>" style="width: 50px;" alt="User Image">
+                        <span style="font-size:18px;font-weight:600"><?php echo htmlspecialchars($user['type']); ?>
+                            Customer</span>
+                    </p>
+
                     <p><strong>Email:</strong> <?php echo htmlspecialchars($user['email']); ?></p>
                     <p><strong>Address:</strong> <?php echo htmlspecialchars($user['address']); ?></p>
                     <?php else: ?>
@@ -219,10 +236,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['logout'])) {
 
                         <?php endwhile; ?>
                         <?php if ($order_result->num_rows == 0): ?>
-                <div style="text-align: center; font-size: 15px; margin-top: 50px; color: #546178;">
-            No orders available.
-        </div>
-                <?php endif; ?>
+                        <div style="text-align: center; font-size: 15px; margin-top: 50px; color: #546178;">
+                            No orders available.
+                        </div>
+                        <?php endif; ?>
                     </div>
                 </div>
             </div>
