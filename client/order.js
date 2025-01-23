@@ -6,6 +6,7 @@ const quantityInput = document.getElementById('quantity');
 const decrementButton = document.getElementById('decrement');
 const incrementButton = document.getElementById('increment');
 const selectedPriceInput = document.getElementById('selected_price');
+const deliveryCitySelect = document.getElementById('delivery_city');
 
 // User's session type
 const userType = document.getElementById('userType').value; // "Residential" or "Business"
@@ -55,6 +56,8 @@ nextButton.addEventListener('click', () => {
             });
             return;
         }
+       
+        calculateFinalAmount();
     } else if (currentPage === 2) {
         const cardNo = document.getElementById('card_no').value;
         const expMonth = document.getElementById('exp_month').value;
@@ -104,6 +107,7 @@ nextButton.addEventListener('click', () => {
         const totalPrice = (itemPrice * quantity).toFixed(2);
         const deliveryName = document.getElementById('delivery_name').value;
         const deliveryAddress = document.getElementById('delivery_address').value;
+        const contact = document.getElementById('contact').value;
         const contact = document.getElementById('contact').value;
 
         const invoiceDetails = `

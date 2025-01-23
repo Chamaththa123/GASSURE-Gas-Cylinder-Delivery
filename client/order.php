@@ -42,6 +42,24 @@ if (isset($_SESSION['user_email'])) {
         exit;
     }
 }
+
+function getCities($conn) {
+    $query = "SELECT id, Name, Fee FROM cities";
+    $result = $conn->query($query);
+    $cities = [];
+
+    if ($result->num_rows > 0) {
+        while ($row = $result->fetch_assoc()) {
+            $cities[] = $row;
+        }
+    }
+    return $cities;
+}
+
+// Call the function with $conn as an argument
+$cities = getCities($conn);
+
+
 ?>
 
 <!DOCTYPE html>
@@ -177,7 +195,8 @@ if (isset($_SESSION['user_email'])) {
             Place Your Order</div>
         <div class="form-container" style="display: flex; justify-content: center; align-items: center; height:auto;">
             <form id="multiPageForm" method="POST" action="" style='width:700px'>
-            <input type="hidden" id="userType" value="<?= $_SESSION['type'] ?>">
+            <input type="hidden" id="userType" value="<?= isset($_SESSION['type']) ? htmlspecialchars($_SESSION['type'], ENT_QUOTES, 'UTF-8') : '' ?>">
+
                 <!-- Page 1: Select Item -->
                 <div class="form-page active" id="page1">
                     <p style='font-weight:600;font-size:20px;margin-bottom:60px'>Select Cylinder Type</p>
@@ -213,6 +232,7 @@ if (isset($_SESSION['user_email'])) {
                     </div>
                     <div>
                     <?php 
+                    $msg = "";
         if ($_SESSION) {
             if ($_SESSION['type'] === 'Residential') {
                 $msg = "As a Residential Customer, you can only purchase up to 2 cylinders at once.";
@@ -234,6 +254,18 @@ if (isset($_SESSION['user_email'])) {
 
                     <label for="delivery_address">Delivery Address:</label>
                     <input type="text" id="delivery_address" name="delivery_address" required><br>
+
+                    <select id="delivery_city" name="delivery_city" required>
+    <option value="">Select City</option>
+    <?php foreach ($cities as $city): ?>
+        <option value="<?= $city['id'] ?>" data-fee="<?= $city['Fee'] ?>">
+            <?= htmlspecialchars($city['Name']) ?> (Fee: Rs. <?= number_format($city['Fee'], 2) ?>)
+        </option>
+    <?php endforeach; ?>
+</select>
+<input type="hidden" id="delivery_fee" name="delivery_fee">
+<input type="hidden" id="final_amount" name="final_amount">
+
 
                     <label for="contact">Contact:</label>
                     <input type="text" id="contact" name="contact" required>
@@ -348,6 +380,7 @@ if (isset($_SESSION['user_email'])) {
     $totalAmount = $unit_price * $quantity;
     $delivery_name = $_POST['delivery_name'];
     $delivery_address = $_POST['delivery_address'];
+    $deliveryCity = $_POST['delivery_city'];
     $contact = $_POST['contact'];
     $order_date = date("Y-m-d H:i:s");
     $card_type = $_POST['card_type'];
@@ -357,13 +390,29 @@ if (isset($_SESSION['user_email'])) {
     $cvv = $_POST['cvv'];
     $item_description = $item['description'];
 
+    // Fetch delivery fee for the selected city
+$city_query = $conn->prepare("SELECT fee FROM cities WHERE id = ?");
+$city_query->bind_param("i", $deliveryCity);
+$city_query->execute();
+$city_result = $city_query->get_result();
+
+if ($city_result->num_rows > 0) {
+    $city_row = $city_result->fetch_assoc();
+    $delivery_fee = floatval($city_row['fee']); // Assign the delivery fee
+} else {
+    $delivery_fee = 0; // Default to 0 if the city is not found
+}
+$city_query->close();
+
+$final_amount = $totalAmount + $delivery_fee; // Calculate final amount
+
     // Start transaction
     $conn->begin_transaction();
 
     try {
         // Save order details
-        $order_query = $conn->prepare("INSERT INTO orders (user_id, item_id,unit_price, quantity, totalAmount, delivery_name, delivery_address, contact, order_date) VALUES (?, ?,?, ?, ?, ?, ?, ?, ?)");
-        $order_query->bind_param("iididssss", $user_id, $item_id, $unit_price,$quantity, $totalAmount, $delivery_name, $delivery_address, $contact, $order_date);
+        $order_query = $conn->prepare("INSERT INTO orders (user_id, item_id,unit_price, quantity, totalAmount, delivery_name, delivery_address, contact, order_date,delivery_city,delivery_fee,finalAmount) VALUES (?, ?,?, ?, ?, ?, ?, ?, ?,?,?,?)");
+        $order_query->bind_param("iididsssssdd", $user_id, $item_id, $unit_price,$quantity, $totalAmount, $delivery_name, $delivery_address, $contact, $order_date,$deliveryCity,$delivery_fee, $final_amount);
         $order_query->execute();
         $order_id = $conn->insert_id; // Get the last inserted order ID
 
