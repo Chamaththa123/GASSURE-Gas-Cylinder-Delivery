@@ -56,8 +56,7 @@ nextButton.addEventListener('click', () => {
             });
             return;
         }
-       
-        calculateFinalAmount();
+    
     } else if (currentPage === 2) {
         const cardNo = document.getElementById('card_no').value;
         const expMonth = document.getElementById('exp_month').value;
@@ -108,14 +107,17 @@ nextButton.addEventListener('click', () => {
         const deliveryName = document.getElementById('delivery_name').value;
         const deliveryAddress = document.getElementById('delivery_address').value;
         const contact = document.getElementById('contact').value;
-        const contact = document.getElementById('contact').value;
-
+        const selectedCity = deliveryCitySelect.options[deliveryCitySelect.selectedIndex].text;
+        const deliveryFee = deliveryCitySelect.options[deliveryCitySelect.selectedIndex].dataset.fee || 0;
+        const finalAmount= parseFloat(totalPrice) + parseFloat(deliveryFee);
         const invoiceDetails = `
         <p><strong>Order Summary</strong></p>
         <p style="font-size:15px; margin-bottom:-15px;">Item Name: ${itemDescription}</p>
         <p style="font-size:15px; margin-bottom:-15px;">Price per Unit: Rs. ${itemPrice.toFixed(2)}</p>
         <p style="font-size:15px; margin-bottom:-15px;">Quantity: ${quantity}</p>
-        <p style="font-size:15px; margin-bottom:-15px;">Total Price: Rs. ${totalPrice}</p>
+        <p style="font-size:15px; margin-bottom:-15px;">Sub Total Price: Rs. ${totalPrice}</p>
+        <p style="font-size:15px; margin-bottom:-15px;">Delivery City: ${selectedCity}</p>
+          <p style="font-size:15px; margin-bottom:-15px;">Total Price: Rs. ${finalAmount}</p>
         <hr>
         <p><strong>Delivery Details</strong></p>
         <p style="font-size:15px; margin-bottom:-15px;">Name: ${deliveryName}</p>
