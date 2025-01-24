@@ -195,6 +195,7 @@
                 support is just a call away!</div>
         </div>
 
+        <?php include './client/mapLocation.php'; ?>
 
     </div>
     <?php include './includes/footer.php'; ?>
