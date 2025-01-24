@@ -30,11 +30,11 @@ if (isset($_SESSION['user_email'])) {
 
 if ($user_id !== null) {
   $order_query = $conn->prepare(
-      "SELECT o.*, i.*, u.*, o.id AS orderId , p.status as payment_Status,o.status AS order_Status
+      "SELECT o.*, i.*, u.*, o.id AS orderId , c.Name as cityName,o.status AS order_Status
          FROM orders o 
          JOIN item i ON o.item_id = i.id 
          JOIN users u ON o.user_id = u.id 
-         JOIN payment p ON o.id = p.order_id 
+         JOIN cities c ON o.delivery_city = c.id 
           ORDER BY o.id DESC" 
   );
 
@@ -111,6 +111,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delivered_order'])) {
             <img src="../images/logo.png" class="logo" style="width:100px" alt="Logo">
         </div>
         <br />
+        <a href="./dashboard.php">DashBoard</a>
         <a href="./inventory.php">Inventory</a>
         <a class="active" href="./admin-orders.php">Orders</a>
         <a href="./user-admin.php">Customers</a>
@@ -136,9 +137,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delivered_order'])) {
                                 <th>Item</th>
                                 <th>Unit Price</th>
                                 <th>Qty</th>
-                                <th>Total</th>
+                                <th>Sub Total</th>
                                 <th>Delivery Details</th>
-                                <th>Payment</th>
+                                <th>City</th>
+                                <th>Delivery Fee</th>
+                                <th>Total Amount</th>
                                 <th>Status</th>
                                 <th>Action</th>
                             </tr>
@@ -160,7 +163,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delivered_order'])) {
                                 echo "<td data-label='Total'>" . "Rs." . htmlspecialchars($order['totalAmount']) . "</td>";
                                 echo "<td data-label='Delivery'>" . htmlspecialchars($order['delivery_name']) . ", " . htmlspecialchars($order['delivery_address']) .  ", " . htmlspecialchars($order['contact']) . "</td>";
                                
-                                echo "<td data-label='Payment'>" . htmlspecialchars($order['payment_Status']) . "</td>";
+                                echo "<td data-label='cityName'>" . htmlspecialchars($order['cityName']) . "</td>";
+                                echo "<td data-label='delivery_fee'>" . "Rs." . htmlspecialchars($order['delivery_fee']) . "</td>";
+                                echo "<td data-label='finalAmount'>" . "Rs." . htmlspecialchars($order['finalAmount']) . "</td>";
                                 echo "<td data-label='Status'>" . htmlspecialchars($order['order_Status']) . "</td>";
                                 echo "<td data-label=''>
                                         <div class='action-buttons'>";

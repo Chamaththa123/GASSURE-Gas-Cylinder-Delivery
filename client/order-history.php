@@ -32,11 +32,12 @@ if (isset($_SESSION['user_email'])) {
 $order_result = null;
 if ($user_id !== null) {
     $order_query = $conn->prepare(
-        "SELECT o.*, i.*, o.id AS orderId 
-         FROM orders o 
-         JOIN item i ON o.item_id = i.id 
-         WHERE o.user_id = ?
-          ORDER BY o.id DESC" 
+        "SELECT o.*, i.*, o.id AS orderId ,c.Name as cityName
+        FROM orders o 
+        JOIN item i ON o.item_id = i.id 
+        JOIN cities c ON o.delivery_city = c.id 
+        WHERE o.user_id = ? 
+        ORDER BY o.id DESC " 
     );
     $order_query->bind_param("i", $user_id);
     $order_query->execute();
@@ -129,7 +130,7 @@ if ($user_id !== null) {
                         </td>
 
                         <td>TOTAL<br /><span style='font-size:13px'>Rs.
-                                <?php echo htmlspecialchars($row['totalAmount']); ?></span>
+                                <?php echo htmlspecialchars($row['finalAmount']); ?></span>
                         </td>
                         <td style='text-align:right'>ORDER :
                             OR#<?php echo htmlspecialchars($row['orderId']); ?><br />
@@ -161,10 +162,14 @@ if ($user_id !== null) {
                                 style='font-weight:bold;font-size:17px'><?php echo htmlspecialchars($row['description']); ?></span>
                             <br /><span>Unit Price : Rs.<?php echo htmlspecialchars($row['price']); ?></span>
                             <br /><span>Qty : <?php echo htmlspecialchars($row['quantity']); ?></span>
+                            <br /><span>Sub Total : Rs.
+                                <?php echo htmlspecialchars($row['totalAmount']); ?></span><br />
+                            <span><span>Delivery Fee : Rs. <?php echo htmlspecialchars($row['delivery_fee']); ?></span>
                         </td>
                         <td style='width:40%;text-align:right'>
                             <?php echo htmlspecialchars($row['delivery_name']); ?><br />
                             <?php echo htmlspecialchars($row['delivery_address']); ?><br />
+                            <?php echo htmlspecialchars($row['cityName']); ?><br />
                             <?php echo htmlspecialchars($row['contact']); ?>
                         </td>
                     </tr>
@@ -173,10 +178,10 @@ if ($user_id !== null) {
             </div>
             <?php endwhile; ?>
             <?php if ($order_result->num_rows == 0): ?>
-                <div style="text-align: center; font-size: 15px; margin-top: 50px; color: #546178;">
-            No orders available.
-        </div>
-                <?php endif; ?>
+            <div style="text-align: center; font-size: 15px; margin-top: 50px; color: #546178;">
+                No orders available.
+            </div>
+            <?php endif; ?>
         </div>
 
     </div>
