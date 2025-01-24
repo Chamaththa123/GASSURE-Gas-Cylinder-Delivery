@@ -28,7 +28,32 @@ if (isset($_SESSION['user_email'])) {
     }
 }
 
+// Get the current month's order count for each city
+$currentMonth = date('Y-m');
+$orderDataQuery = "
+    SELECT cities.Name AS city_name, 
+           COUNT(orders.id) AS order_count
+    FROM cities
+    LEFT JOIN orders 
+        ON cities.id = orders.delivery_city 
+        AND DATE_FORMAT(orders.order_date, '%Y-%m') = ?
+    GROUP BY cities.id, cities.Name
+    ORDER BY cities.Name ASC
+";
+$stmt = $conn->prepare($orderDataQuery);
+$stmt->bind_param("s", $currentMonth);
+$stmt->execute();
+$result = $stmt->get_result();
 
+$cities = [];
+$orderCounts = [];
+
+while ($row = $result->fetch_assoc()) {
+    $cities[] = $row['city_name'];
+    $orderCounts[] = (int)$row['order_count'];
+}
+
+$stmt->close();
 ?>
 
 <!DOCTYPE html>
@@ -40,14 +65,13 @@ if (isset($_SESSION['user_email'])) {
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/js/all.min.js" crossorigin="anonymous">
     </script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@1.2.1"></script>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="../css/sidebar.css">
     <link rel="stylesheet" href="../css/inventory.css">
-    <style>
-
-    </style>
 </head>
 
 <body>
@@ -59,7 +83,7 @@ if (isset($_SESSION['user_email'])) {
         <br />
         <a class="active" href="./dashboard.php">DashBoard</a>
         <a href="./inventory.php">Inventory</a>
-        <a  href="./admin-orders.php">Orders</a>
+        <a href="./admin-orders.php">Orders</a>
         <a href="./user-admin.php">Customers</a>
         <a href="../index.php">Back</a>
     </div>
@@ -73,34 +97,52 @@ if (isset($_SESSION['user_email'])) {
         <div class="content">
             <div class="content-one">
 
-            <canvas id="myChart" style="width:100%"></canvas>
+                <canvas id="myChart" style="width:10%"></canvas>
 
-<script>
-var xValues = ["Italy", "France", "Spain", "USA", "Argentina"];
-var yValues = [55, 49, 44, 24, 55];
-var barColors = ["red", "green","blue","orange","brown"];
+                <script>
+                var cities = <?php echo json_encode($cities); ?>;
+                var orderCounts = <?php echo json_encode($orderCounts); ?>;
+                var barColors = Array(cities.length).fill("blue");
 
-new Chart("myChart", {
-  type: "bar",
-  data: {
-    labels: xValues,
-    datasets: [{
-      backgroundColor: barColors,
-      data: yValues
-    }]
-  },
-  options: {
-    legend: {display: false},
-    title: {
-      display: true,
-      text: "World Wine Production 2018"
-    }
-  }
-});
-</script>
+                new Chart("myChart", {
+                    type: "bar",
+                    data: {
+                        labels: cities,
+                        datasets: [{
+                            backgroundColor: barColors,
+                            data: orderCounts
+                        }]
+                    },
+                    options: {
+                        legend: {
+                            display: false
+                        },
+                        title: {
+                            display: true,
+                            text: "Order Count by City for Current Month"
+                        },
+                        scales: {
+                            x: {
+                                title: {
+                                    display: true,
+                                    text: "Cities"
+                                },
+                                barPercentage: 0.1,
+                                categoryPercentage: 0.1
+                            },
+                            y: {
+                                title: {
+                                    display: true,
+                                    text: "Order Count"
+                                },
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+                </script>
             </div>
         </div>
-
     </div>
 
 </body>
