@@ -71,6 +71,7 @@ if ($user_id !== null) {
             <img src="../images/logo.png" class="logo" style="width:100px" alt="Logo">
         </div>
         <br />
+        <a href="./dashboard.php">DashBoard</a>
         <a href="./inventory.php">Inventory</a>
         <a href="./admin-orders.php">Orders</a>
         <a href="./user-admin.php">Customers</a>

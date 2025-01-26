@@ -314,7 +314,7 @@ input[type=text], input[type=email], input[type=password], select {
             <a href="./client/order.php">Order Now</a>
             <a href="./client/feedback.php">Feedback</a>
             <?php if (isset($_SESSION['role']) && $_SESSION['role'] == 1): ?>
-            <a href="./client/inventory.php">Admin</a>
+            <a href="./client/dashboard.php">Admin</a>
             <?php endif; ?>
 
             <?php if (isset($_SESSION['user_name'])): ?>

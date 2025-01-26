@@ -77,6 +77,7 @@ if ($user_query) {
             <img src="../images/logo.png" class="logo" style="width:100px" alt="Logo">
         </div>
         <br />
+        <a href="./dashboard.php">DashBoard</a>
         <a href="./inventory.php">Inventory</a>
         <a href="./admin-orders.php">Orders</a>
         <a class="active" href="./user-admin.php">Customers</a>
