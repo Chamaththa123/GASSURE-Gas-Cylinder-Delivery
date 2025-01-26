@@ -56,6 +56,15 @@ nextButton.addEventListener('click', () => {
             });
             return;
         }
+        const contactNoRegex = /^\d{10}$/;
+        if ( !contactNoRegex.test(contact)) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Invalid Contact Number',
+                text: 'Please enter a valid 10-digit contact number.',
+            });
+            return;
+        }
     
     } else if (currentPage === 2) {
         const cardNo = document.getElementById('card_no').value;
@@ -70,6 +79,7 @@ nextButton.addEventListener('click', () => {
             });
             return;
         }
+        
 
         // Validate Card Number: 16 digits, only numbers
         const cardNoRegex = /^\d{16}$/;
@@ -117,7 +127,7 @@ nextButton.addEventListener('click', () => {
         <p style="font-size:15px; margin-bottom:-15px;">Quantity: ${quantity}</p>
         <p style="font-size:15px; margin-bottom:-15px;">Sub Total Price: Rs. ${totalPrice}</p>
         <p style="font-size:15px; margin-bottom:-15px;">Delivery City: ${selectedCity}</p>
-          <p style="font-size:15px; margin-bottom:-15px;">Total Price: Rs. ${finalAmount}</p>
+          <p style="font-size:15px; margin-bottom:-15px;">Total Price: Rs. ${finalAmount.toFixed(2)}</p>
         <hr>
         <p><strong>Delivery Details</strong></p>
         <p style="font-size:15px; margin-bottom:-15px;">Name: ${deliveryName}</p>
@@ -159,7 +169,7 @@ incrementButton.addEventListener('click', () => {
         Swal.fire({
             icon: 'info',
             title: 'Limit Reached',
-            text: `As a ${userType} user, you can only purchase up to ${maxCylinders} cylinders.`,
+            text: `As a ${userType} Customer, you can only purchase up to ${maxCylinders} cylinders.`,
         });
     }
 });

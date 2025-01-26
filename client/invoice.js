@@ -20,6 +20,9 @@ document.getElementById('downloadInvoice').addEventListener('click', () => {
             const {
                 order_id,
                 user,
+                city,
+                delivery_fee,
+                final_amount,
                 order_date
             } = orderData;
             console.log('orderData', orderData)
@@ -102,18 +105,20 @@ document.getElementById('downloadInvoice').addEventListener('click', () => {
             });
 
             // Add total amount below the table
-            doc.text(`Total Amount: Rs. ${totalPrice}`, 14, doc.lastAutoTable.finalY + 10);
-            doc.text(`Payment : Paid`, 14, doc.lastAutoTable.finalY + 15);
+            doc.text(`Sub Total: Rs. ${totalPrice}`, 14, doc.lastAutoTable.finalY + 10);
+            doc.text(`Delivery Fee : ${city} - Rs ${delivery_fee}`, 14, doc.lastAutoTable.finalY + 15);
+            doc.text(`Total Amount : Rs. ${final_amount}`, 14, doc.lastAutoTable.finalY + 20);
+            doc.text(`Payment : Paid`, 14, doc.lastAutoTable.finalY + 25);
             doc.setFont("helvetica", "normal");
 
             doc.setFontSize(9);
             doc.text(
                 `- We will notify you of any delays, and you will be updated with tracking information once the order ships.`,
-                14, doc.lastAutoTable.finalY + 30);
+                14, doc.lastAutoTable.finalY + 45);
             doc.text(
                 `- Ensure someone is available at the provided address to receive the package. Delivery cannot be rescheduled `,
-                14, doc.lastAutoTable.finalY + 35);
-            doc.text(`  once dispatched`, 14, doc.lastAutoTable.finalY + 40);
+                14, doc.lastAutoTable.finalY + 50);
+            doc.text(`  once dispatched`, 14, doc.lastAutoTable.finalY + 53);
             centerText("============================ Thank You ============================", 175, 14,
                 "helvetica", "medium");
             centerText("Glad to see you again !!", 180, 10, "helvetica", "normal");

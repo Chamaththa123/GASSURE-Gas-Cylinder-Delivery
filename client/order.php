@@ -161,25 +161,25 @@ $cities = getCities($conn);
         border-radius: 4px;
     }
 
-    
+
 
     @media (max-width: 768px) {
         #items-container {
             flex-wrap: wrap;
-           
+
             justify-content: center;
-            
+
             gap: 20px;
-            
+
         }
 
         .item-container {
             width: 100%;
-            
+
             max-width: 300px;
-            
+
             margin: 0 auto 10px;
-            
+
         }
 
     }
@@ -195,7 +195,8 @@ $cities = getCities($conn);
             Place Your Order</div>
         <div class="form-container" style="display: flex; justify-content: center; align-items: center; height:auto;">
             <form id="multiPageForm" method="POST" action="" style='width:700px'>
-            <input type="hidden" id="userType" value="<?= isset($_SESSION['type']) ? htmlspecialchars($_SESSION['type'], ENT_QUOTES, 'UTF-8') : '' ?>">
+                <input type="hidden" id="userType"
+                    value="<?= isset($_SESSION['type']) ? htmlspecialchars($_SESSION['type'], ENT_QUOTES, 'UTF-8') : '' ?>">
 
                 <!-- Page 1: Select Item -->
                 <div class="form-page active" id="page1">
@@ -231,7 +232,7 @@ $cities = getCities($conn);
                         <button type="button" id="increment" style='background-color:#0d6efd'>+</button>
                     </div>
                     <div>
-                    <?php 
+                        <?php 
                     $msg = "";
         if ($_SESSION) {
             if ($_SESSION['type'] === 'Residential') {
@@ -241,7 +242,8 @@ $cities = getCities($conn);
             }
         }
     ?>
-    <span style="font-size:14px;font-weight:400;color:red"><?php echo htmlspecialchars($msg); ?></span>
+                        <span
+                            style="font-size:14px;font-weight:400;color:red"><?php echo htmlspecialchars($msg); ?></span>
                     </div>
                 </div>
 
@@ -254,17 +256,19 @@ $cities = getCities($conn);
 
                     <label for="delivery_address">Delivery Address:</label>
                     <input type="text" id="delivery_address" name="delivery_address" required><br>
+                    <label for="delivery_address">Select City:</label>
 
                     <select id="delivery_city" name="delivery_city" required>
-    <option value="">Select City</option>
-    <?php foreach ($cities as $city): ?>
-        <option value="<?= $city['id'] ?>" data-fee="<?= $city['Fee'] ?>">
-            <?= htmlspecialchars($city['Name']) ?> (Fee: Rs. <?= number_format($city['Fee'], 2) ?>)
-        </option>
-    <?php endforeach; ?>
-</select>
-<input type="hidden" id="delivery_fee" name="delivery_fee">
-<input type="hidden" id="final_amount" name="final_amount">
+                        <option value="">Select City</option>
+                        <?php foreach ($cities as $city): ?>
+                        <option value="<?= $city['id'] ?>" data-fee="<?= $city['Fee'] ?>">
+                            <?= htmlspecialchars($city['Name']) ?> (Fee: Rs. <?= number_format($city['Fee'], 2) ?>)
+                        </option>
+                        <?php endforeach; ?>
+                    </select>
+                    <p style='font-size:12px;color:red'>Select the city where the delivery address belongs. the delivery fee is included according to that city. There is no delivery fee within 2 miles of our outlet, and delivery fees are added for other areas.</p>
+                    <input type="hidden" id="delivery_fee" name="delivery_fee">
+                    <input type="hidden" id="final_amount" name="final_amount">
 
 
                     <label for="contact">Contact:</label>
@@ -335,7 +339,7 @@ $cities = getCities($conn);
 
     </script>
     <script src="./invoice.js">
-    
+
     </script>
 
 
