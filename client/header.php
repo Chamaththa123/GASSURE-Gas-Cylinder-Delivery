@@ -8,39 +8,46 @@ if (!isset($conn)) {
 }
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    if (isset($_POST['login'])) {
-        $email = $_POST['email'];
-        $password = $_POST['password'];
-
-        $stmt = $conn->prepare("SELECT * FROM users WHERE email = ?");
-        $stmt->bind_param("s", $email);
-        $stmt->execute();
-        $result = $stmt->get_result();
-
-        if ($result->num_rows == 1) {
-            $user = $result->fetch_assoc();
-            if (password_verify($password, $user['password'])) {
-                $_SESSION['user_email'] = $user['email'];
-                $_SESSION['user_name'] = $user['first_name'];
-                $_SESSION['id'] = $user['id'];
-                $_SESSION['role'] = $user['role'];
-                $success_message = "Login successful!";
-                header('Location: ' . $_SERVER['PHP_SELF']);
-                exit();
+    if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+        if (isset($_POST['login'])) {
+            $email = $_POST['email'];
+            $password = $_POST['password'];
+    
+            $stmt = $conn->prepare("SELECT * FROM users WHERE email = ?");
+            $stmt->bind_param("s", $email);
+            $stmt->execute();
+            $result = $stmt->get_result();
+    
+            if ($result->num_rows == 1) {
+                $user = $result->fetch_assoc();
+    
+                // Check account status
+                if ($user['status'] == 0) {
+                    $error_message = "Your account is deactivated. Please contact the company for assistance.";
+                } else if (password_verify($password, $user['password'])) {
+                    $_SESSION['user_email'] = $user['email'];
+                    $_SESSION['user_name'] = $user['first_name'];
+                    $_SESSION['id'] = $user['id'];
+                    $_SESSION['role'] = $user['role'];
+                    $_SESSION['type'] = $user['type'];
+                    $success_message = "Login successful!";
+                    header('Location: ' . $_SERVER['PHP_SELF']);
+                    exit();
+                } else {
+                    $error_message = "Invalid password!";
+                }
             } else {
-                $error_message = "Invalid password!";
+                $error_message = "No user found with this email!";
             }
-        } else {
-            $error_message = "No user found with this email!";
         }
-        
-    }
+    }    
 
 if (isset($_POST['register'])) {
     $first_name = $_POST['first_name'];
     $last_name = $_POST['last_name'];
     $email = $_POST['email'];
     $address = $_POST['address'];
+    $type = $_POST['type'];
     $password = password_hash($_POST['password'], PASSWORD_BCRYPT);
 
     $checkEmail = $conn->prepare("SELECT * FROM users WHERE email = ?");
@@ -51,8 +58,8 @@ if (isset($_POST['register'])) {
     if ($result->num_rows > 0) {
         $error_message = "User already exists!";
     } else {
-        $stmt = $conn->prepare("INSERT INTO users (first_name, last_name, email, address, password) VALUES (?, ?, ?, ?, ?)");
-        $stmt->bind_param("sssss", $first_name, $last_name, $email, $address, $password);
+        $stmt = $conn->prepare("INSERT INTO users (first_name, last_name, email, address,type, password) VALUES (?, ?, ?, ?,?, ?)");
+        $stmt->bind_param("ssssss", $first_name, $last_name, $email, $address,$type, $password);
 
         if ($stmt->execute()) {
             $user_id = $stmt->insert_id;
@@ -61,6 +68,7 @@ if (isset($_POST['register'])) {
             $_SESSION['user_name'] = $first_name;
             $_SESSION['id'] = $user_id;
             $_SESSION['role'] = 0; 
+            $_SESSION['type'] = $type;
 
             header('Location: ' . $_SERVER['PHP_SELF']);
             exit();
@@ -221,6 +229,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['logout'])) {
     display: none;
 }
 
+input[type=text], input[type=email], input[type=password], select {
+  width: 100%;
+  padding: 6px 10px;
+  margin: 8px 0;
+  display: inline-block;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+  border-radius: 5px;
+}
+
+
 @media screen and (max-width: 600px) {
     .topnav a:not(:first-child) {
         display: none;
@@ -291,11 +310,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['logout'])) {
             <i class="fa fa-bars"></i>
         </a>
         <div class="split">
-            <a href="./../index.php">Home</a>
+        <a href="./../index.php">Home</a>
             <a href="./order.php">Order Now</a>
             <a href="./feedback.php">Feedback</a>
             <?php if (isset($_SESSION['role']) && $_SESSION['role'] == 1): ?>
-            <a href="./inventory.php">Admin</a>
+                <a href="./inventory.php">Admin</a>
             <?php endif; ?>
 
             <?php if (isset($_SESSION['user_name'])): ?>
@@ -303,6 +322,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['logout'])) {
                 <?php echo htmlspecialchars($_SESSION['user_name']); ?>
             </a>
             <a style="padding:0px" href="./user-profile.php">
+
                 <img src="../images/user.png" class="logo" style="width:40px" alt="Logo">
             </a>
             <a style="padding-left:10px" href="./order-history.php">
@@ -385,7 +405,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['logout'])) {
 
                     <label for="address"><b>Address *</b></label>
                     <input type="text" placeholder="Enter Address" name="address">
-
+                    <label for="type"><b>Customer Type *</b></label>
+                    <select name="type" required>
+                        <option value="Residential">Residential Customer</option>
+                        <option value="Business">Business Customer</option>
+                    </select>
                     <label for="password"><b>Password *</b></label>
                     <input type="password" placeholder="Enter Password" name="password">
 
