@@ -160,7 +160,9 @@
 
         </div>
     </div>
-    <div class='header1' style='margin-top:-40px'> How It Works </div>
+    <?php include './client/CustomerTypes.php'; ?>
+
+    <div class='header1' > How It Works </div>
     <div class="container-home">
         <div class="column-home"
             style="float: right; width: 90%; margin-top: 40px; border-radius: 15px; height: 80%; text-align: center;">
