@@ -30,9 +30,10 @@ if (isset($_SESSION['user_email'])) {
 $order_result = null;
 if ($user_id !== null) {
     $order_query = $conn->prepare(
-        "SELECT o.*, i.*, o.id AS orderId 
+        "SELECT o.*, i.*, o.id AS orderId ,c.Name as cityName
          FROM orders o 
          JOIN item i ON o.item_id = i.id 
+         JOIN cities c ON o.delivery_city = c.id 
          WHERE o.user_id = ? 
          ORDER BY o.id DESC LIMIT 3" 
     );
@@ -144,6 +145,23 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['logout'])) {
                     <h2 style='text-align:center'>
                         <?php echo htmlspecialchars($user['first_name'] . " " . $user['last_name']); ?>
                     </h2>
+                    <?php 
+        $imageSrc = "../images/user.png";
+        if ($user) {
+            if ($user['type'] === 'Residential') {
+                $imageSrc = "../images/house.png";
+            } elseif ($user['type'] === 'Business') {
+                $imageSrc = "../images/vendor.png";
+            }
+        }
+    ?>
+                    <p
+                        style="display: flex; align-items: center; justify-content: left; gap: 20px;margin-top:40px;margin-bottom:40px">
+                        <img src="<?php echo htmlspecialchars($imageSrc); ?>" style="width: 50px;" alt="User Image">
+                        <span style="font-size:18px;font-weight:600"><?php echo htmlspecialchars($user['type']); ?>
+                            Customer</span>
+                    </p>
+
                     <p><strong>Email:</strong> <?php echo htmlspecialchars($user['email']); ?></p>
                     <p><strong>Address:</strong> <?php echo htmlspecialchars($user['address']); ?></p>
                     <?php else: ?>
@@ -170,7 +188,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['logout'])) {
                                     </td>
 
                                     <td>TOTAL<br /><span style='font-size:13px'>Rs.
-                                            <?php echo htmlspecialchars($row['totalAmount']); ?></span>
+                                            <?php echo htmlspecialchars($row['finalAmount']); ?></span>
                                     </td>
                                     <td style='text-align:right'>ORDER :
                                         OR#<?php echo htmlspecialchars($row['orderId']); ?><br /><?php
@@ -204,10 +222,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['logout'])) {
                                         <br /><span>Unit Price :
                                             Rs.<?php echo htmlspecialchars($row['price']); ?></span>
                                         <br /><span>Qty : <?php echo htmlspecialchars($row['quantity']); ?></span>
+                                        <br /><span>Sub Total : Rs.
+                                            <?php echo htmlspecialchars($row['totalAmount']); ?></span><br />
+                                        <span><span>Delivery Fee : Rs.
+                                                <?php echo htmlspecialchars($row['delivery_fee']); ?></span>
+
                                     </td>
                                     <td style='width:40%;text-align:right'>
                                         <?php echo htmlspecialchars($row['delivery_name']); ?><br />
                                         <?php echo htmlspecialchars($row['delivery_address']); ?><br />
+                                        <?php echo htmlspecialchars($row['cityName']); ?><br />
                                         <?php echo htmlspecialchars($row['contact']); ?>
                                     </td>
                                 </tr>
@@ -219,10 +243,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['logout'])) {
 
                         <?php endwhile; ?>
                         <?php if ($order_result->num_rows == 0): ?>
-                <div style="text-align: center; font-size: 15px; margin-top: 50px; color: #546178;">
-            No orders available.
-        </div>
-                <?php endif; ?>
+                        <div style="text-align: center; font-size: 15px; margin-top: 50px; color: #546178;">
+                            No orders available.
+                        </div>
+                        <?php endif; ?>
                     </div>
                 </div>
             </div>

@@ -42,6 +42,24 @@ if (isset($_SESSION['user_email'])) {
         exit;
     }
 }
+
+function getCities($conn) {
+    $query = "SELECT id, Name, Fee FROM cities";
+    $result = $conn->query($query);
+    $cities = [];
+
+    if ($result->num_rows > 0) {
+        while ($row = $result->fetch_assoc()) {
+            $cities[] = $row;
+        }
+    }
+    return $cities;
+}
+
+// Call the function with $conn as an argument
+$cities = getCities($conn);
+
+
 ?>
 
 <!DOCTYPE html>
@@ -143,25 +161,25 @@ if (isset($_SESSION['user_email'])) {
         border-radius: 4px;
     }
 
-    
+
 
     @media (max-width: 768px) {
         #items-container {
             flex-wrap: wrap;
-           
+
             justify-content: center;
-            
+
             gap: 20px;
-            
+
         }
 
         .item-container {
             width: 100%;
-            
+
             max-width: 300px;
-            
+
             margin: 0 auto 10px;
-            
+
         }
 
     }
@@ -177,6 +195,9 @@ if (isset($_SESSION['user_email'])) {
             Place Your Order</div>
         <div class="form-container" style="display: flex; justify-content: center; align-items: center; height:auto;">
             <form id="multiPageForm" method="POST" action="" style='width:700px'>
+                <input type="hidden" id="userType"
+                    value="<?= isset($_SESSION['type']) ? htmlspecialchars($_SESSION['type'], ENT_QUOTES, 'UTF-8') : '' ?>">
+
                 <!-- Page 1: Select Item -->
                 <div class="form-page active" id="page1">
                     <p style='font-weight:600;font-size:20px;margin-bottom:60px'>Select Cylinder Type</p>
@@ -210,6 +231,20 @@ if (isset($_SESSION['user_email'])) {
                         <input type="number" id="quantity" name="selected_quantity" value="1" min="1" readonly>
                         <button type="button" id="increment" style='background-color:#0d6efd'>+</button>
                     </div>
+                    <div>
+                        <?php 
+                    $msg = "";
+        if ($_SESSION) {
+            if ($_SESSION['type'] === 'Residential') {
+                $msg = "As a Residential Customer, you can only purchase up to 2 cylinders at once.";
+            } elseif ($_SESSION['type'] === 'Business') {
+                $msg = "As a Business Customer, you can only purchase up to 5 cylinders at once.";
+            }
+        }
+    ?>
+                        <span
+                            style="font-size:14px;font-weight:400;color:red"><?php echo htmlspecialchars($msg); ?></span>
+                    </div>
                 </div>
 
                 <!-- Page 2: Order Details -->
@@ -221,6 +256,20 @@ if (isset($_SESSION['user_email'])) {
 
                     <label for="delivery_address">Delivery Address:</label>
                     <input type="text" id="delivery_address" name="delivery_address" required><br>
+                    <label for="delivery_address">Select City:</label>
+
+                    <select id="delivery_city" name="delivery_city" required>
+                        <option value="">Select City</option>
+                        <?php foreach ($cities as $city): ?>
+                        <option value="<?= $city['id'] ?>" data-fee="<?= $city['Fee'] ?>">
+                            <?= htmlspecialchars($city['Name']) ?> (Fee: Rs. <?= number_format($city['Fee'], 2) ?>)
+                        </option>
+                        <?php endforeach; ?>
+                    </select>
+                    <p style='font-size:12px;color:red'>Select the city where the delivery address belongs. the delivery fee is included according to that city. There is no delivery fee within 2 miles of our outlet, and delivery fees are added for other areas.</p>
+                    <input type="hidden" id="delivery_fee" name="delivery_fee">
+                    <input type="hidden" id="final_amount" name="final_amount">
+
 
                     <label for="contact">Contact:</label>
                     <input type="text" id="contact" name="contact" required>
@@ -286,322 +335,11 @@ if (isset($_SESSION['user_email'])) {
         </div>
     </div>
 
-    <script>
-    const pages = document.querySelectorAll('.form-page');
-    const nextButton = document.getElementById('nextButton');
-    const prevButton = document.getElementById('prevButton');
-    const submitButton = document.getElementById('submitButton');
-    const quantityInput = document.getElementById('quantity');
-    const decrementButton = document.getElementById('decrement');
-    const incrementButton = document.getElementById('increment');
-    const selectedPriceInput = document.getElementById('selected_price');
+    <script src="./order.js">
 
-    let currentPage = 0;
-
-    function updatePage() {
-        pages.forEach((page, index) => {
-            page.classList.toggle('active', index === currentPage);
-        });
-        prevButton.disabled = currentPage === 0;
-        nextButton.style.display = currentPage === pages.length - 1 ? 'none' : 'inline-block';
-        submitButton.style.display = currentPage === pages.length - 1 ? 'inline-block' : 'none';
-    }
-
-    nextButton.addEventListener('click', () => {
-        if (currentPage === 0) {
-            const selectedItem = document.querySelector('input[name="item_id"]:checked');
-            if (!selectedItem) {
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'Select an Item',
-                    text: 'Please select an item to proceed.',
-                });
-                return;
-            }
-            const maxQuantity = parseInt(selectedItem.dataset.stock);
-            if (parseInt(quantityInput.value) > maxQuantity) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Insufficient Stock',
-                    text: `Only ${maxQuantity} items are available in stock.`,
-                });
-                return;
-            }
-            selectedPriceInput.value = selectedItem.dataset.price;
-        } else if (currentPage === 1) {
-            const deliveryName = document.getElementById('delivery_name').value.trim();
-            const deliveryAddress = document.getElementById('delivery_address').value.trim();
-            const contact = document.getElementById('contact').value.trim();
-            if (!deliveryName || !deliveryAddress || !contact) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Missing Details',
-                    text: 'Please fill out all required fields.',
-                });
-                return;
-            }
-        } else if (currentPage === 2) {
-            const cardNo = document.getElementById('card_no').value;
-            const expMonth = document.getElementById('exp_month').value;
-            const expYear = document.getElementById('exp_year').value;
-            const cvv = document.getElementById('cvv').value;
-            if (!cardNo || !expMonth || !expYear || !cvv) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Missing Payment Details',
-                    text: 'Please fill out all payment details.',
-                });
-                return;
-            }
-
-            // Validate Card Number: 16 digits, only numbers
-            const cardNoRegex = /^\d{16}$/;
-            if (!cardNo || !cardNoRegex.test(cardNo)) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Invalid Card Number',
-                    text: 'Please enter a valid 16-digit card number.',
-                });
-                return;
-            }
-
-            // Validate CVV: 3 digits, only numbers
-            const cvvRegex = /^\d{3}$/;
-            if (!cvv || !cvvRegex.test(cvv)) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Invalid CVV',
-                    text: 'Please enter a valid 3-digit CVV.',
-                });
-                return;
-            }
-
-
-            // Populate the Invoice Section on Page 4
-            const selectedItem = document.querySelector('input[name="item_id"]:checked');
-            if (!selectedItem) {
-                alert("Please select an item before proceeding to the invoice.");
-                return;
-            }
-            const itemId = selectedItem.value;
-            const itemPrice = parseFloat(selectedItem.dataset.price);
-            const itemDescription = selectedItem.dataset.description;
-            const quantity = parseInt(quantityInput.value);
-            const totalPrice = (itemPrice * quantity).toFixed(2);
-            const deliveryName = document.getElementById('delivery_name').value;
-            const deliveryAddress = document.getElementById('delivery_address').value;
-            const contact = document.getElementById('contact').value;
-
-            const invoiceDetails = `
-            <p><strong>Order Summary</strong></p>
-            <p style="font-size:15px; margin-bottom:-15px;">Item Name: ${itemDescription}</p>
-            <p style="font-size:15px; margin-bottom:-15px;">Price per Unit: Rs. ${itemPrice.toFixed(2)}</p>
-            <p style="font-size:15px; margin-bottom:-15px;">Quantity: ${quantity}</p>
-            <p style="font-size:15px; margin-bottom:-15px;">Total Price: Rs. ${totalPrice}</p>
-            <hr>
-            <p><strong>Delivery Details</strong></p>
-            <p style="font-size:15px; margin-bottom:-15px;">Name: ${deliveryName}</p>
-            <p style="font-size:15px; margin-bottom:-15px;">Address: ${deliveryAddress}</p>
-            <p style="font-size:15px; margin-bottom:-15px;">Contact: ${contact}</p>
-            <hr>
-            <p><strong>Payment Summary</strong></p>
-            <p style="font-size:15px; margin-bottom:-15px;">Card Type: ${document.getElementById('card_type').value}</p>
-            <p style="font-size:15px; margin-bottom:-15px;">Card Number: **** **** **** ${document.getElementById('card_no').value.slice(-4)}</p>
-        `;
-
-            document.getElementById('invoice-details').innerHTML = invoiceDetails;
-        }
-
-        currentPage++;
-        updatePage();
-    });
-
-
-    prevButton.addEventListener('click', () => {
-        currentPage--;
-        updatePage();
-    });
-
-    decrementButton.addEventListener('click', () => {
-        const currentValue = parseInt(quantityInput.value, 10);
-        if (currentValue > 1) {
-            quantityInput.value = currentValue - 1;
-        }
-    });
-
-    incrementButton.addEventListener('click', () => {
-        const currentValue = parseInt(quantityInput.value, 10);
-        const selectedItem = document.querySelector('input[name="item_id"]:checked');
-        const maxQuantity = selectedItem ? parseInt(selectedItem.dataset.stock) : Infinity;
-        if (currentValue < maxQuantity) {
-            quantityInput.value = currentValue + 1;
-        }
-    });
-
-    document.getElementById('downloadInvoice').style.display = 'none';
-
-    // Add an event listener to the submit button
-    document.getElementById('submitButton').addEventListener('click', (event) => {
-        event.preventDefault(); // Prevent default form submission
-
-        const form = document.getElementById('multiPageForm');
-        const formData = new FormData(form);
-
-        fetch('', {
-                method: 'POST',
-                body: formData
-            })
-            .then((response) => response.text())
-            .then((data) => {
-                // Display the success message and show the "Download Invoice" button
-                document.getElementById('submitButton').style.display = 'none';
-                document.getElementById('prevButton').style.display = 'none';
-                document.getElementById('downloadInvoice').style.display = 'inline-block';
-                Swal.fire('Success', 'Order placed successfully!', 'success');
-
-                // Optionally, update the invoice details (already populated in your PHP)
-                // Stay on the same page and prevent any redirection
-            })
-            .catch((error) => {
-                Swal.fire('Error', 'Something went wrong!', 'error');
-            });
-    });
-
-    updatePage();
     </script>
-    <script>
-    document.getElementById('downloadInvoice').addEventListener('click', () => {
-        const {
-            jsPDF
-        } = window.jspdf;
+    <script src="./invoice.js">
 
-        fetch('fetch_latest_order.php', {
-                method: 'GET',
-            })
-            .then(response => response.json())
-            .then(orderData => {
-                if (!orderData.success) {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: orderData.message || 'Failed to fetch order details.',
-                    });
-                    return;
-                }
-
-                const {
-                    order_id,
-                    user,
-                    order_date
-                } = orderData;
-                console.log('orderData', orderData)
-                const doc = new jsPDF({
-                    orientation: "portrait",
-                    unit: "mm",
-                    format: [200, 200], // Custom width and height in mm
-                });
-
-                // Helper function to center text
-                const centerText = (text, yPosition, fontSize = 12, font = "helvetica", style =
-                    "normal") => {
-                    doc.setFont(font, style);
-                    doc.setFontSize(fontSize);
-                    const textWidth = doc.getStringUnitWidth(text) * fontSize / doc.internal
-                        .scaleFactor;
-                    const pageWidth = doc.internal.pageSize.width;
-                    const xPosition = (pageWidth - textWidth) / 2;
-                    doc.text(text, xPosition, yPosition);
-                };
-
-                // Add title and company details
-                centerText("RECEIPT", 20, 18, "helvetica", "bold");
-                centerText("GASSURE (PVT) LTD", 27, 12, "helvetica", "semi-bold");
-                centerText("Tel : 011-2345534 | Email: contact@gassure.com", 33, 10);
-                centerText("123 Gas Avenue, Colombo, Sri Lanka", 39, 10);
-
-                // Use data from orderData
-                doc.setFont("helvetica", "bold");
-                doc.setFontSize(11);
-                // doc.text(`Customer : ${delivery_name}`, 14, 45);
-                doc.text(`ORDER :  OR#${order_id}`, 14, 55);
-                doc.setFont("helvetica", "normal");
-                doc.setFontSize(10);
-                doc.text(`Customer :  ${user.first_name} ${user.last_name}`, 14, 65);
-                doc.text(`Email :  ${user.email}`, 14, 70);
-                const orderDate = new Date(order_date).toISOString().split('T')[
-                    0]; // Extracts the date portion
-                doc.text(`Date :  ${orderDate}`, 14, 75);
-                // doc.text(`Address : ${delivery_address}`, 14, 50);
-                // doc.text(`Phone : ${contact}`, 14, 55);
-
-                // Gather selected item details
-                const selectedItem = document.querySelector('input[name="item_id"]:checked');
-                if (!selectedItem) {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: 'Please select an item to generate the invoice.',
-                    });
-                    return;
-                }
-
-                // Extract dynamic data
-                const itemDescription = selectedItem.dataset.description;
-                const itemPrice = parseFloat(selectedItem.dataset.price);
-                const quantity = parseInt(document.getElementById('quantity').value);
-                const totalPrice = (itemPrice * quantity).toFixed(2);
-
-                // Define table data
-                const tableColumns = ["Item Name", "Unit Price", "Quantity", "Total"];
-                const tableRows = [
-                    [itemDescription, `Rs. ${itemPrice.toFixed(2)}`, quantity, `Rs. ${totalPrice}`]
-                ];
-
-                // Add table using autoTable plugin
-                doc.autoTable({
-                    head: [tableColumns],
-                    body: tableRows,
-                    startY: 80, // Position below the sample text
-                    theme: "grid",
-                    headStyles: {
-                        fillColor: [187, 187, 187], // Blue header background
-                        textColor: [0, 0, 0], // White header text
-                        fontStyle: "bold",
-                    },
-                    bodyStyles: {
-                        textColor: [0, 0, 0], // Black body text
-                    },
-                });
-
-                // Add total amount below the table
-                doc.text(`Total Amount: Rs. ${totalPrice}`, 14, doc.lastAutoTable.finalY + 10);
-                doc.text(`Payment : Paid`, 14, doc.lastAutoTable.finalY + 15);
-                doc.setFont("helvetica", "normal");
-
-                doc.setFontSize(9);
-                doc.text(
-                    `- We will notify you of any delays, and you will be updated with tracking information once the order ships.`,
-                    14, doc.lastAutoTable.finalY + 30);
-                doc.text(
-                    `- Ensure someone is available at the provided address to receive the package. Delivery cannot be rescheduled `,
-                    14, doc.lastAutoTable.finalY + 35);
-                doc.text(`  once dispatched`, 14, doc.lastAutoTable.finalY + 40);
-                centerText("============================ Thank You ============================", 175, 14,
-                    "helvetica", "medium");
-                centerText("Glad to see you again !!", 180, 10, "helvetica", "normal");
-
-                // Save the PDF with a custom name
-                doc.save('GASSURE-RECEIPT.pdf');
-            })
-            .catch(error => {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: 'An error occurred while fetching order details.',
-                });
-                console.error('Fetch error:', error);
-            });
-    });
     </script>
 
 
@@ -646,6 +384,7 @@ if (isset($_SESSION['user_email'])) {
     $totalAmount = $unit_price * $quantity;
     $delivery_name = $_POST['delivery_name'];
     $delivery_address = $_POST['delivery_address'];
+    $deliveryCity = $_POST['delivery_city'];
     $contact = $_POST['contact'];
     $order_date = date("Y-m-d H:i:s");
     $card_type = $_POST['card_type'];
@@ -655,13 +394,29 @@ if (isset($_SESSION['user_email'])) {
     $cvv = $_POST['cvv'];
     $item_description = $item['description'];
 
+    // Fetch delivery fee for the selected city
+$city_query = $conn->prepare("SELECT fee FROM cities WHERE id = ?");
+$city_query->bind_param("i", $deliveryCity);
+$city_query->execute();
+$city_result = $city_query->get_result();
+
+if ($city_result->num_rows > 0) {
+    $city_row = $city_result->fetch_assoc();
+    $delivery_fee = floatval($city_row['fee']); // Assign the delivery fee
+} else {
+    $delivery_fee = 0; // Default to 0 if the city is not found
+}
+$city_query->close();
+
+$final_amount = $totalAmount + $delivery_fee; // Calculate final amount
+
     // Start transaction
     $conn->begin_transaction();
 
     try {
         // Save order details
-        $order_query = $conn->prepare("INSERT INTO orders (user_id, item_id,unit_price, quantity, totalAmount, delivery_name, delivery_address, contact, order_date) VALUES (?, ?,?, ?, ?, ?, ?, ?, ?)");
-        $order_query->bind_param("iididssss", $user_id, $item_id, $unit_price,$quantity, $totalAmount, $delivery_name, $delivery_address, $contact, $order_date);
+        $order_query = $conn->prepare("INSERT INTO orders (user_id, item_id,unit_price, quantity, totalAmount, delivery_name, delivery_address, contact, order_date,delivery_city,delivery_fee,finalAmount) VALUES (?, ?,?, ?, ?, ?, ?, ?, ?,?,?,?)");
+        $order_query->bind_param("iididsssssdd", $user_id, $item_id, $unit_price,$quantity, $totalAmount, $delivery_name, $delivery_address, $contact, $order_date,$deliveryCity,$delivery_fee, $final_amount);
         $order_query->execute();
         $order_id = $conn->insert_id; // Get the last inserted order ID
 
